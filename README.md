@@ -1,14 +1,12 @@
 # Compare-UserJS
 
-**Update (2018-07-05):** Updated to v1.4. Possibly the final version, for a while at least. Improved the output, added some new parameters, made the parsing more robust (harder to break). Some other changes. Read the help info.
-
 [PowerShell](https://github.com/powershell/powershell) script for comparing two user.js (or prefs.js) files. 
 
 Requires only PS v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems (with PowerShell Core).
 
 No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
 
-Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup> algorithm for parsing JavaScript half-assedly, and by default logs the results to userJS_diff.log.
+Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to userJS_diff.log.
 
 Things detected (and reported) by this script:
 
@@ -29,7 +27,7 @@ Simply save this script wherever you want, launch the PowerShell CLI, [CD to tha
 .\Compare-UserJS
 ```
 
-If you're a PowerShell virgin and you still don't have a clue what I am talking about, don't freak out (been there, done that) and just keep reading. There is an alternative below. If you're the reader type, simply [read this](https://ss64.com/ps/syntax-run.html).
+If you're a PowerShell virgin and you still don't have a clue what I am talking about, don't freak out (been there, done that) and just keep reading. There is an alternative below. If you're the reader type, [read this](https://ss64.com/ps/syntax-run.html).
 
 The script will prompt you to enter the paths of the two user.js files to compare. Keep in mind that the actual names of the files don't matter, I only refer to them as *user.js* because that's what their names have to be when... OMG am I really explaining this?
 
@@ -41,7 +39,7 @@ Get-Help .\Compare-UserJS -full
 
 Or just read it from the file, but that's less thrilling.
 
-If you don't want to type that much (and you're on Windows), you can alternatively run the batch script below (Compare-UserJS.bat) from the same folder as the PS script. It works as a launcher that bypasses the PS execution policy. Saves you opening the CLI, CD'ing and typing in the command, but Compare-UserJS will still have you type in the paths of the user.js files (sorry). Compare-UserJS will also NOT make your coffee.
+If you don't want to type that much (and you're on Windows), you can alternatively run the batch script Compare-UserJS.bat from the same folder as the PS script. It works as a launcher that bypasses the PS execution policy. Saves you opening the CLI, CD'ing and typing in the command, but Compare-UserJS will still have you type in the paths of the user.js files (sorry). Compare-UserJS will also NOT make your coffee.
 
 If you intend to use this script regularly (I don't see why you wouldn't), you can also pass the paths of the two files to Compare-UserJS as parameters.
 
