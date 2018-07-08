@@ -20,7 +20,7 @@
 	Path of the second file to be used in the comparison. Wildcards are allowed.
 
 .PARAMETER outputFile
-	Path of the file where the report will be dumped. Defaults to 'userJS_diff.log' (relative path). The report will always be appended to the end of the file.
+	Path of the file where the report will be dumped. Defaults to 'userJS_diff.log' (relative path).
 
 .PARAMETER append
 	Append the report to the end of the file, instead of rewriting if a file by that name exists.
