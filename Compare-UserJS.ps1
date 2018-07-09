@@ -44,8 +44,8 @@
 	128 - hide potential syntax errors
 
 .NOTES
-	Version: 1.5.0
-	Update Date: 2018-07-06
+	Version: 1.5.1
+	Update Date: 2018-07-09
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -195,7 +195,7 @@ Function Write-Report {
 	Param()
 
 	# Get list of unique prefs and sort them in alphabetical order
-	$unique_prefs = (($prefsA.keys + $prefsB.keys | Get-Unique) | Sort-Object)
+	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
 	
 	# Get the length of the longest prefname, which will be used for padding the output.
 	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) {$pn_pad = $prefname.length}}
