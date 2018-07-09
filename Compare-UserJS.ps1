@@ -44,7 +44,7 @@
 	128 - hide potential syntax errors
 
 .NOTES
-	Version: 1.4.1
+	Version: 1.5.0
 	Update Date: 2018-07-06
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -56,9 +56,9 @@
 	Compares user.js to user_b.js.
 
 .EXAMPLE
-	Compare-UserJS -outputfile "myfile.txt"
+	Compare-UserJS -outputfile "myfile.txt" -append
 
-	Writes the output to myfile.txt.
+	Writes the output to myfile.txt and appends to the end of the file if it already exists.
 
 .EXAMPLE
 	Compare-UserJS -hideMask 5
@@ -115,9 +115,7 @@ if ($fileNameA -ceq $fileNameB) {
 # Used for padding the output in a few lists.
 if ($fileNameA.length -ge $fileNameB.length) {
 	$fn_pad = $fileNameA.length
-} else {
-	$fn_pad = $fileNameB.length
-}
+} else {$fn_pad = $fileNameB.length}
 
 # Regular expression for detecting JS comments. Meant to be used as a suffix.
 $rx_c = "(?!(?:(?:[^""]|(?<=\\)"")*?""|(?:[^']|(?<=\\)')*?')\s*\)\s*;)"
@@ -133,7 +131,7 @@ Function Get-UserJSPrefs {
 	Param([hashtable]$prefs_ht, [string]$fileStr, [string]$inactive_flag = "[i]")
 
 	# Semicolons signify the end of a statement in JS. Let's split lines at semicolons, just in case.
-	$fileStr = ($fileStr -creplace "(?<=pref\(.{5,}\).*?);", ";`n")
+	$fileStr = ($fileStr -creplace ";$rx_c", ";`n")
 
 	# Read line by line, filtered.
 	ForEach ($line in $fileStr.Split("`n") -cmatch "pref\s*\(\s*['""].*['""]\s*,.*\)\s*;") {
@@ -153,11 +151,11 @@ Function Read-SLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Get only lines with single-line comments
-	$fileStr = (($fileStr.Split("`n") -cmatch ("//" + $rx_c)) | Out-String)
+	$fileStr = (($fileStr.Split("`n") -cmatch "//$rx_c") | Out-String)
 	# Trim everything before //
-	$fileStr = ($fileStr -creplace ("^.*?" + "//" + $rx_c), "//")
+	$fileStr = $fileStr -creplace "^.*?//$rx_c", "//"
 	# Split up lines at // just in case
-	$fileStr = ($fileStr -creplace ("//" + $rx_c), "`n")
+	$fileStr = $fileStr -creplace "//$rx_c", "`n"
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -167,11 +165,11 @@ Function Read-MLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Trim text between multi-line comments
-	$fileStr = ($fileStr -creplace ("(?s)" + "\*/" + $rx_c + ".*?/\*" + $rx_c), "*/`n/*")
+	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
 	# remove leading text
-	$fileStr = ($fileStr -creplace ("(?s)^.*?" + "/\*" + $rx_c), "/*")
+	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", "/*")
 	# remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)^(.*" + "\*/" + $rx_c + ").*$"), '$1')
+	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
 	# Remove single-line comments
 	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), "`n")
 
@@ -184,7 +182,7 @@ Function Read-ActivePrefs {
 
 	if ($comments) {
 		# Remove multi-line comments
-		$fileStr = ($fileStr -creplace ("(?s)" + "/\*" + $rx_c + ".*?" + "\*/" + $rx_c), "`n")
+		$fileStr = ($fileStr -creplace ("(?s)/\*" + $rx_c + ".*?\*/$rx_c"), "`n")
 		# Remove single-line comments
 		$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), "`n")
 	}
@@ -196,13 +194,11 @@ Function Read-ActivePrefs {
 Function Write-Report {
 	Param()
 
-	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
+	# Get list of unique prefs and sort them in alphabetical order
+	$unique_prefs = (($prefsA.keys + $prefsB.keys | Get-Unique) | Sort-Object)
 	
-	# Get the longest prefname, which will be used for padding the output.
-	ForEach ($prefname in $unique_prefs)
-	{
-		if ($pn_pad -lt $prefname.length) {$pn_pad = $prefname.length}
-	}
+	# Get the length of the longest prefname, which will be used for padding the output.
+	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) {$pn_pad = $prefname.length}}
 	
 	# Format for padding
 	$list_format = "{0, -3} {1, " + (-$pn_pad) + "}  {2, 1}" + $nl
@@ -258,44 +254,35 @@ Function Write-Report {
 
 	if ($matching_prefs) {
 		$matches_count = ($matching_prefs.Split("`n").count - 1)
-		$summary_format -f $matches_count, "matching prefs, both value and state (active/inactive)"
-	}
+		$summary_format -f $matches_count, "matching prefs, both value and state (active/inactive)"}
 	if ($differences) {
 		$diffs_count = (($differences.Split("`n").count - 1) / 3)
-		$summary_format -f $diffs_count, "prefs with different values but matching state"
-	}
+		$summary_format -f $diffs_count, "prefs with different values but matching state"}
 	if ($missing_in_A) {
 		$missing_A_count = ($missing_in_A.Split("`n").count - 1)
-		$summary_format -f $missing_A_count, ("prefs not declared in " + $fileNameA)
-	}
+		$summary_format -f $missing_A_count, ("prefs not declared in " + $fileNameA)}
 	if ($missing_in_B) {
 		$missing_B_count = ($missing_in_B.Split("`n").count - 1)
-		$summary_format -f $missing_B_count, ("prefs not declared in " + $fileNameB)
-	}
+		$summary_format -f $missing_B_count, ("prefs not declared in " + $fileNameB)}
 	if ($inactive_in_A) {
 		$inactive_A_count = ($inactive_in_A.Split("`n").count - 1)
-		$summary_format -f $inactive_A_count, ("prefs with matching values but inactive in " + $fileNameA)
-	}
+		$summary_format -f $inactive_A_count, ("prefs with matching values but inactive in " + $fileNameA)}
 	if ($inactive_in_B) {
 		$inactive_B_count = ($inactive_in_B.Split("`n").count - 1)
-		$summary_format -f $inactive_B_count, ("prefs with matching values but inactive in " + $fileNameB)
-	}
+		$summary_format -f $inactive_B_count, ("prefs with matching values but inactive in " + $fileNameB)}
 	if ($fully_mismatching) {
 		$fm_count = ($fully_mismatching.Split("`n").count - 1) / 3
-		$summary_format -f $fm_count, ("prefs with both mismatching values and states")
-	}
+		$summary_format -f $fm_count, ("prefs with both mismatching values and states")}
 	" ----"
 	$summary_format -f $unique_prefs.count, "combined unique prefs"
 
 	if ($bad_syntax_A -or $bad_syntax_B) {$nl + " Warning:" + $nl}
 	if ($bad_syntax_A) {
 		$errors_A_count = ($bad_syntax_A.Split("`n").count - 1)
-		$summary_format -f $errors_A_count, ("prefs in " + $fileNameA + " seem to have broken values")
-	}
+		$summary_format -f $errors_A_count, "prefs in " + $fileNameA + " seem to have broken values"}
 	if ($bad_syntax_B) {
 		$errors_B_count = ($bad_syntax_B.Split("`n").count - 1)
-		$summary_format -f $errors_B_count, "prefs in " + $fileNameB + " seem to have broken values"
-	}
+		$summary_format -f $errors_B_count, "prefs in " + $fileNameB + " seem to have broken values"}
 
 	$nl + " Reference: [i] = inactive pref (commented-out)" + $nl
 
