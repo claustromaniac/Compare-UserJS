@@ -47,7 +47,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.7.0
+	Version: 1.7.1
 	Update Date: 2018-07-11
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -105,7 +105,7 @@ $ErrorActionPreference = "Stop"
 if ($Env:OS) {$nl = "`r`n"} else {$nl = "`n"}
 
 # Create root hash tables for prefs in each file.
-prefsA = @{}; $prefsB = @{}
+$prefsA = @{}; $prefsB = @{}
 
 # Extract the names of the files.
 $fileNameA = (Split-Path $filepath_A -leaf)
@@ -145,7 +145,6 @@ Function JSCom {
 		} else {"//"}
 	}
 }
-
 
 Function Get-UserJSPrefs {
 	# Function for parsing pref declarations, extracting prefnames and values, populating the root hashtables.
