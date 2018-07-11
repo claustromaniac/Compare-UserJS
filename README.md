@@ -1,8 +1,8 @@
 # Compare-UserJS
 
-No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
+No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). Side note: for enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
 
-Requires only PS v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
+This script requires only PS v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
 
 Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to userJS_diff.log.
 
@@ -25,7 +25,7 @@ Simply save this script wherever you want, launch the PowerShell CLI, [CD to tha
 .\Compare-UserJS
 ```
 
-If you're a PowerShell virgin and you still don't have a clue what I am talking about, don't freak out (been there, done that) and just keep reading. There is an alternative below. If you're the reader type, [read this](https://ss64.com/ps/syntax-run.html).
+If you're a PowerShell virgin and you still don't have a clue what I am talking about, don't freak out (been there, done that) and just keep reading. There is an alternative below. If you're the reader type, [read this](https://ss64.com/ps/syntax-run.html) (or just search teh interwebz).
 
 The script will prompt you to enter the paths of the two user.js files to compare. Keep in mind that the actual names of the files don't matter, I only refer to them as *user.js* because that's what their names have to be when... OMG am I really explaining this?
 
@@ -45,13 +45,14 @@ If you intend to use this script regularly (I don't see why you wouldn't), you c
 
 **Index** | **Name** | **Default** | **Description**
 --- | --- | --- | ---
-0 | filePath_A |  | Path to the first file to compare. Can be absolute or relative.
-1 | filePath_B |  | Path to the second file to compare. Can also be relative.
-2 | ouputFile | userJS_diff.log | Path to the file where the report will be dumped. Can be relative.
-3 | append |  | Append the report to the end of the file, instead of rewriting if a file by that name exists.
-4 | noCommentsA |  | Parse JS comments in file A as code (not as comments). Makes parsing faster when you know beforehand that file A doesn't have inactive prefs.
-5 | noCommentsB |  | Parse JS comments in file B as code.
-6 | hideMask | 0 | Bitmask value for hiding parts of the report selectively. See the embedded help info for details.
+0 | `filePath_A` |  | Path to the first file to compare. Can be absolute or relative.
+1 | `filePath_B` |  | Path to the second file to compare. Can also be relative.
+2 | `ouputFile` | *userJS_diff.log* | Path to the file where the report will be dumped. Can be relative.
+3 | `append` |  | Append the report to the end of the file, instead of rewriting if a file by that name exists.
+4 | `noCommentsA` |  | Parse JS comments in file A as code (not as comments). Makes parsing faster when you know beforehand that file A doesn't have inactive prefs.
+5 | `noCommentsB` |  | Parse JS comments in file B as code.
+6 | `hideMask` | 0 | Bitmask value for hiding parts of the report selectively. See the embedded help info for details.
+7 | `inJS` |  | Get the report written in JavaScript. It will be written to *userJS_diff.js* unless the `-outputFile` parameter is specified.
 
 <br>
 <details><summary> Click to see what the output looks like (v1.4.1). :point_left: </summary><p>
