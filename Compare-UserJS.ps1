@@ -32,7 +32,7 @@
 	Skips parsing comments in file B, treating everything as active. Useful for making parsing faster when you know beforehand that file B does not have comments.
 
 .PARAMETER hideMask
-	Bitmask value for hiding parts of the report selectively. Adding up the values omits different combinations of the output in the report.
+	Bitmask value for hiding parts of the report selectively. Adding up the values omits different parts of the report.
 	0 - hide nothing (default)
 	1 - hide list of prefs with matching values and matching state (active/inactive)
 	2 - hide list of prefs with different values
@@ -44,8 +44,8 @@
 	128 - hide potential syntax errors
 
 .NOTES
-	Version: 1.5.1
-	Update Date: 2018-07-09
+	Version: 1.6.0
+	Update Date: 2018-07-11
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
