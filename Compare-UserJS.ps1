@@ -93,7 +93,7 @@ PARAM (
 )
 #----------------[ Declarations ]------------------------------------------------------
 
-# Set Error Action, mostly for debugging
+# Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = "Stop"
 
 # Newline characters to use in the logfile, based on OS (CR+LF on Windows, LF everywhere else)
