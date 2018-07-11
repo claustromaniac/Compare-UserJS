@@ -848,7 +848,7 @@ If you intend to use this script regularly (I don't see why you wouldn't), you c
 </p></details>
 <br><br>
 
-## F.A.Q. (assuming it counts when I'm the one questioning myself)
+## F.A.Q. <sup>(assuming it counts when I'm the one asking)</sup>
 
 #### Q: Why the heck did you make this?
 A: Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under 200 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm hooked on regular expressions.
