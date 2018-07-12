@@ -47,7 +47,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.7.1
+	Version: 1.8.0
 	Update Date: 2018-07-11
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -155,8 +155,8 @@ Function Get-UserJSPrefs {
 	# Semicolons signify the end of a statement in JS. Let's split lines at semicolons, just in case.
 	$fileStr = ($fileStr -creplace ";$rx_c", ";`n")
 
-	# Read line by line, filtered.
-	ForEach ($line in $fileStr.Split("`n") -cmatch "pref\s*\(\s*['""].*['""]\s*,.*\)\s*;") {
+	# Read line by line
+	ForEach ($line in $fileStr.Split("`n")) {
 		$prefname = ($line -creplace ("^.*pref\s*\(\s*" + $rx_sc + "\s*,.*\)\s*;.*"), '$1$2')
 		if ($prefname -ceq $line) {continue}
 		$val = ($line -creplace ("^.*pref\s*\(\s*(?:" + $rx_s + ")\s*,\s*(?:(?:" + $rx_sc + ")|(true|false|-?[0-9]+))\s*\)\s*;.*"), '$1$2$3')
