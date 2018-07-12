@@ -47,7 +47,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.8.1
+	Version: 1.9.0
 	Update Date: 2018-07-12
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -96,6 +96,7 @@ PARAM (
 	[uint32]$hideMask = 0,
 	[switch]$inJS = $false
 )
+
 #----------------[ Declarations ]------------------------------------------------------
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
@@ -118,7 +119,7 @@ if ($fileNameA.length -ge $fileNameB.length) { $fn_pad = $fileNameA.length }
 else {$fn_pad = $fileNameB.length}
 
 # Regular expression for detecting JS comments. Meant to be used as a suffix.
-$rx_c = "(?!(?:(?:[^""]|(?<=\\)"")*?""|(?:[^']|(?<=\\)')*?')\s*\)\s*;)"
+$rx_c = "(?!(?:(?:[^""]|(?<=\\)"")*""|(?:[^']|(?<=\\)')*')\s*\)\s*;)"
 # Regular expression for matching prefname or value string. Must be used within groups.
 $rx_s = "(?:""(?:[^""]|(?<=\\)"")*"")|(?:'(?:[^']|(?<=\\)')*')"
 # Regular expression for capturing prefname or value string. Includes two capturing groups.
@@ -157,12 +158,12 @@ Function Get-UserJSPrefs {
 
 	# Read line by line
 	ForEach ($line in $fileStr.Split("`n")) {
-		$prefname = ($line -creplace ("^.*pref\s*\(\s*" + $rx_sc + "\s*,.*\)\s*;.*"), '$1$2')
+		$prefname = ($line -creplace (".*pref\s*\(\s*" + $rx_sc + "\s*,.*\)\s*;.*"), '$1$2')
 		if ($prefname -ceq $line) {continue}
-		$val = ($line -creplace ("^.*pref\s*\(\s*(?:" + $rx_s + ")\s*,\s*(?:(?:" + $rx_sc + ")|(true|false|-?[0-9]+))\s*\)\s*;.*"), '$1$2$3')
+		$val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,\s*(?:(?:" + $rx_sc + ")|(true|false|-?[0-9]+))\s*\)\s*;.*"), '$1$2$3')
 		$broken = ($val -ceq $line)
 		if ($broken) {
-			$val = ($line -creplace ("^.*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1')
+			$val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1')
 		} elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = '"' + $val + '"'}
 		$prefs_ht.$prefname = @{"inactive"=$inactive_flag; "broken"=$broken; "value"=$val}
 	}
@@ -189,9 +190,9 @@ Function Read-MLCom {
 	# Trim text between multi-line comments
 	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
 	# remove leading text
-	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", "/*")
+	$fileStr = ($fileStr -creplace "(?s).*?/\*$rx_c", "/*")
 	# remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+	$fileStr = ($fileStr -creplace ("(?s)(.*\*/" + $rx_c + ").*"), '$1')
 	# Remove single-line comments
 	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), "`n")
 
