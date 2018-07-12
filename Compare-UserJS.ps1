@@ -47,8 +47,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.8.0
-	Update Date: 2018-07-11
+	Version: 1.8.1
+	Update Date: 2018-07-12
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -243,7 +243,7 @@ Function Write-Report {
 	$bad_syntax_A = ""			# possible syntax errors in A
 	$bad_syntax_B = ""			# blah blah in B
 
-	(JSCom 1) + ":::::::::::: { Compare-UserJS Report } ::::::::::::"
+	(JSCom 1) + "::::::::::::::: { Compare-UserJS Report } :::::::::::::::"
 	Get-Date
 	$nl + "  Summary:"
 	$summary_format -f $prefsA.count, ("unique prefs in " + $fileNameA)
@@ -323,8 +323,9 @@ Function Write-Report {
 		$errors_B_count = ($bad_syntax_B.Split("`n").count - 1)
 		$summary_format -f $errors_B_count, "prefs in " + $fileNameB + " seem to have broken values"}
 
-	$nl + " Reference:"
-	if (!$inJS) {"    [i] - inactive pref (commented-out)" + $nl}
+	if (!$inJS) {
+		$nl + " Reference:"
+		"    [i] inactive pref (commented-out)" + $nl}
 	JSCom 1
 
 	$sep = (JSCom) + "------------------------------------------------------------------------------" + $nl
