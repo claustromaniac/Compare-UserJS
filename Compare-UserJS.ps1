@@ -47,7 +47,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.9.0
+	Version: 1.9.1
 	Update Date: 2018-07-12
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -170,33 +170,33 @@ Function Get-UserJSPrefs {
 }
 
 Function Read-SLCom {
-	# Function for filtering prefs declared behind single-line JS comments (//...)
-	Param([hashtable]$prefs_ht, [string]$fileStr)
+    # Function for filtering prefs declared behind single-line JS comments (//...)
+    Param([hashtable]$prefs_ht, [string]$fileStr)
 
-	# Get only lines with single-line comments
-	$fileStr = (($fileStr.Split("`n") -cmatch "//$rx_c") | Out-String)
-	# Split up lines at // just in case
-	$fileStr = $fileStr -creplace "//$rx_c", "`n//"
-	# Trim everything before //
-	$fileStr = $fileStr -creplace ".*?//$rx_c", ""
+    # Get only lines with single-line comments
+    $fileStr = (($fileStr.Split("`n") -cmatch "//$rx_c") | Out-String)
+    # Trim everything before //
+    $fileStr = $fileStr -creplace "^.*?//$rx_c", "//"
+    # Split up lines at // just in case
+    $fileStr = $fileStr -creplace "//$rx_c", "`n"
 
-	Get-UserJSPrefs $prefs_ht $fileStr
+    Get-UserJSPrefs $prefs_ht $fileStr
 }
 
 Function Read-MLCom {
-	# Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
-	Param([hashtable]$prefs_ht, [string]$fileStr)
+    # Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
+    Param([hashtable]$prefs_ht, [string]$fileStr)
 
-	# Trim text between multi-line comments
-	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
-	# remove leading text
-	$fileStr = ($fileStr -creplace "(?s).*?/\*$rx_c", "/*")
-	# remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)(.*\*/" + $rx_c + ").*"), '$1')
-	# Remove single-line comments
-	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), "`n")
+    # Trim text between multi-line comments
+    $fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
+    # remove leading text
+    $fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", "/*")
+    # remove trailing text
+    $fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+    # Remove single-line comments
+    $fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), "`n")
 
-	Get-UserJSPrefs $prefs_ht $fileStr
+    Get-UserJSPrefs $prefs_ht $fileStr
 }
 
 Function Read-ActivePrefs {
