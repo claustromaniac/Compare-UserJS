@@ -47,7 +47,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.10.0
+	Version: 1.10.1
 	Update Date: 2018-07-12
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -225,7 +225,7 @@ Function Write-Report {
 	# Format for padding
 	$summary_format = "{0, 5} {1, -1}"
 	if ($inJS) {
-		$list_format = "{0, -3} user_pref(""{1, -1}"", {2, -1});" + $nl
+		$list_format = "{0, -3} pref(""{1, -1}"", {2, -1});" + $nl
 		$dlist_format = "/* {0, " + (-$fn_pad) + "} */ {1, -3} user_pref(""{2, -1}"", {3, -1});" + $nl
 	} else {
 		$list_format = "{0, -3} {1, " + (-$pn_pad) + "}  {2, 1}" + $nl
