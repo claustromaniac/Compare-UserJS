@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.5
+	Version: 1.12.6
 	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -185,15 +185,17 @@ Function Read-MLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Trim text between multi-line comments
-	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
-	# remove leading text
-	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", '/*')
-	# remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+	$fileStr_ = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
+	# Remove leading text
+	$fileStr_ = ($fileStr_ -creplace "(?s)^.*?/\*$rx_c", '/*')
+	# Remove trailing text
+	$fileStr_ = ($fileStr_ -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+	# Return if no multi-line comments were found
+	if ($fileStr_ -ceq $fileStr) {return}
 	# Remove single-line comments
-	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), '')
+	$fileStr_ = ($fileStr_ -creplace ("//" + $rx_c + ".*"), '')
 
-	Get-UserJSPrefs $prefs_ht $fileStr
+	Get-UserJSPrefs $prefs_ht $fileStr_
 }
 
 Function Read-ActivePrefs {
@@ -273,7 +275,7 @@ Function Write-Report {
 							($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
 							($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
 					} else {
-						$fully_mismatching += ("{0, -3} {1, -1}$nl" -f '', $prefname) +
+						$fully_mismatching += "    $prefname$nl" +
 							($dlist_format -f $entriesA[-1].inactive, $fileNameA, $entriesA[-1].value) +
 							($dlist_format -f $entriesB[-1].inactive, $fileNameB, $entriesB[-1].value)
 					}
@@ -298,14 +300,14 @@ Function Write-Report {
 		if ($entriesB[-1].broken) {$bad_syntax_B += $list_format -f $format_arB}
 
 		if ($entriesA.count -gt 1) {
-			if ($dups_A_count++) { $dups_in_A += "    ---$nl" }
+			if ($dups_A_count++) { $dups_in_A += $nl }
 			ForEach ($entry in $entriesA) {
 				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
 		}
 
 		if ($entriesB.count -gt 1) {
-			if ($dups_B_count++) { $dups_in_B += "    ---$nl" }
+			if ($dups_B_count++) { $dups_in_B += $nl }
 			ForEach ($entry in $entriesB) {
 				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
