@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.3
+	Version: 1.12.4
 	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -259,8 +259,8 @@ Function Write-Report {
 	ForEach ($prefname in $unique_prefs) {
 		if ($prefsA.$prefname) { $entriesA = $prefsA.$prefname } else { $entriesA = @() }
 		if ($prefsB.$prefname) { $entriesB = $prefsB.$prefname } else { $entriesB = @() }
-		$format_arA = @($entriesA[-1].inactive, $prefname, [string]$entriesA[-1].value)
-		$format_arB = @($entriesB[-1].inactive, $prefname, [string]$entriesB[-1].value)
+		$format_arA = @( $entriesA[-1].inactive, $prefname, [string]$entriesA[-1].value )
+		$format_arB = @( $entriesB[-1].inactive, $prefname, [string]$entriesB[-1].value )
 		if ($entriesA -and $entriesB) {
 			if ($entriesA[-1].inactive -ne $entriesB[-1].inactive) {
 				if ($entriesA[-1].value -ceq $entriesB[-1].value) {
@@ -273,7 +273,7 @@ Function Write-Report {
 							($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
 							($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
 					} else {
-						$fully_mismatching += ($list_format -f '', $prefname, '') +
+						$fully_mismatching += ("{0, -3} {1, -1}$nl" -f '', $prefname) +
 							($dlist_format -f $entriesA[-1].inactive, $fileNameA, $entriesA[-1].value) +
 							($dlist_format -f $entriesB[-1].inactive, $fileNameB, $entriesB[-1].value)
 					}
@@ -286,9 +286,7 @@ Function Write-Report {
 						($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
 						($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
 				} else {
-					$temp = $format_arA
-					$temp[2] = ''
-					$differences += ($list_format -f $temp) +
+					$differences += ("{0, -3} {1, -1}$nl" -f $entriesA[-1].inactive, $prefname) +
 						($dlist_format -f '', $fileNameA, $entriesA[-1].value) +
 						($dlist_format -f '', $fileNameB, $entriesB[-1].value)
 				}
