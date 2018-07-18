@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.4
+	Version: 1.12.5
 	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -352,29 +352,29 @@ Function Write-Report {
 	if (!$script:inJS) { "$nl Reference:  [i] inactive pref (commented-out)$nl" }
 	JSCom 1
 
-	$sep = (JSCom) + "------------------------------------------------------------------------------$nl"
+	$sep = (JSCom) + "------------------------------------------------------------------------------$nl" + (JSCom)
 	if ($matching_prefs -and !($script:hideMask -band 1)) {
-		$sep + (JSCom) + " The following $matches_count prefs match in both values and states:$nl$nl$matching_prefs$nl" }
+		"$sep The following $matches_count prefs match in both values and states:$nl$nl$matching_prefs$nl" }
 	if ($differences -and !($script:hideMask -band 2)) {
-		$sep + (JSCom) + " The following $diffs_count prefs have different values, but matching states:$nl$nl$differences$nl" }
+		"$sep The following $diffs_count prefs have different values, but matching states:$nl$nl$differences$nl" }
 	if ($missing_in_A -and !($script:hideMask -band 4)) {
-		$sep + (JSCom) + " The following $missing_A_count prefs are not declared in $fileNameA`:$nl$nl$missing_in_A$nl" }
+		"$sep The following $missing_A_count prefs are not declared in $fileNameA`:$nl$nl$missing_in_A$nl" }
 	if ($missing_in_B -and !($script:hideMask -band 8)) {
-		$sep + (JSCom) + " The following $missing_B_count prefs are not declared in $fileNameB`:$nl$nl$missing_in_B$nl" }
+		"$sep The following $missing_B_count prefs are not declared in $fileNameB`:$nl$nl$missing_in_B$nl" }
 	if ($inactive_in_A -and !($script:hideMask -band 16)) {
-		$sep + (JSCom) + " The following $inactive_A_count prefs match but are inactive in $fileNameA`:$nl$nl$inactive_in_A$nl" }
+		"$sep The following $inactive_A_count prefs match but are inactive in $fileNameA`:$nl$nl$inactive_in_A$nl" }
 	if ($inactive_in_B -and !($script:hideMask -band 32)) {
-		$sep + (JSCom) + " The following $inactive_B_count prefs match but are inactive in $fileNameB`:$nl$nl$inactive_in_B$nl" }
+		"$sep The following $inactive_B_count prefs match but are inactive in $fileNameB`:$nl$nl$inactive_in_B$nl" }
 	if ($fully_mismatching -and !($script:hideMask -band 64)) {
-		$sep + (JSCom) + " The following $fm_count prefs have both mismatching values and states:$nl$nl$fully_mismatching$nl" }
+		"$sep The following $fm_count prefs have both mismatching values and states:$nl$nl$fully_mismatching$nl" }
 	if ($bad_syntax_A -and !($script:hideMask -band 128)) {
-		$sep + (JSCom) + " $errors_A_count possible syntax errors detected in $fileNameA`:$nl$nl$bad_syntax_A$nl" }
+		"$sep $errors_A_count possible syntax errors detected in $fileNameA`:$nl$nl$bad_syntax_A$nl" }
 	if ($bad_syntax_B -and !($script:hideMask -band 128)) {
-		$sep + (JSCom) + " $errors_B_count possible syntax errors detected in $fileNameB`:$nl$nl$bad_syntax_B$nl" }
+		"$sep $errors_B_count possible syntax errors detected in $fileNameB`:$nl$nl$bad_syntax_B$nl" }
 	if ($dups_A_count -and !($script:hideMask -band 256)) {
-		$sep + (JSCom) + " The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$dups_in_A$nl" }
+		"$sep The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$dups_in_A$nl" }
 	if ($dups_B_count -and !($script:hideMask -band 256)) {
-		$sep + (JSCom) + " The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$dups_in_B$nl" }
+		"$sep The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$dups_in_B$nl" }
 }
 
 #----------------[ Main Execution ]----------------------------------------------------
