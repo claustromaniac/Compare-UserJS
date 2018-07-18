@@ -42,13 +42,14 @@
 	32 - hide list of matching prefs active in B but inactive in A
 	64 - hide list of prefs that have both mismatching values and states
 	128 - hide potential syntax errors
+	256 - hide lists of duplicate entries
 
 .PARAMETER inJS
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.11.0
-	Update Date: 2018-07-12
+	Version: 1.12.1
+	Update Date: 2018-07-17
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -158,10 +159,10 @@ Function Get-UserJSPrefs {
 		if ($prefname -ceq $line) {continue}
 		$val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,\s*(?:(true|false|-?[0-9]+)|(?:" + $rx_sc + "))\s*\)\s*;.*"), '$1$2$3')
 		$broken = ($val -ceq $line)
-		if ($broken) {
-			$val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1')
-		} elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = '"' + $val + '"'}
-		$prefs_ht.$prefname = @{"inactive"=$inactive_flag; "broken"=$broken; "value"=$val}
+		if ($broken) { $val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1') }
+		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = """$val"""}
+		if ($prefs_ht.$prefname) { $prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val } }
+		else { [hashtable[]]$prefs_ht.$prefname = @{ inactive=$inactive_flag; broken=$broken; value=$val } }
 	}
 }
 
@@ -170,9 +171,9 @@ Function Read-SLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Get only lines with single-line comments
-	$fileStr = (($fileStr.Split("`n") -cmatch "//$rx_c") | Out-String)
+	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
 	# Trim everything before //
-	$fileStr = $fileStr -creplace "^.*?//$rx_c", "//"
+	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", '//'
 	# Split up lines at // just in case
 	$fileStr = $fileStr -creplace "//$rx_c", "`n"
 
@@ -223,6 +224,12 @@ Function Write-Report {
 	$fully_mismatching = ''		# different state and value
 	$bad_syntax_A = ''			# possible syntax errors
 	$bad_syntax_B = ''
+	$dups_in_A = ''				# duplicates
+	$dups_in_B = ''
+
+	$dups_A_count = 0			# counts of prefs with duplicate entries
+	$dups_B_count = 0
+
 	# Get list of unique prefs and sort them in alphabetical order
 	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
 
@@ -245,50 +252,68 @@ Function Write-Report {
 
 	(JSCom 1) + '::::::::::::::: { Compare-UserJS Report } :::::::::::::::'
 	Get-Date
-	$nl + '  Summary:'
+	"$nl`Summary:"
 	$summary_format -f $prefsA.count, "unique prefs in $fileNameA"
 	$summary_format -f $prefsB.count, "unique prefs in $fileNameB$nl"
 
 	ForEach ($prefname in $unique_prefs) {
-		$format_arA = @($prefsA.$prefname."inactive", $prefname, [string]$prefsA.$prefname."value")
-		$format_arB = @($prefsB.$prefname."inactive", $prefname, [string]$prefsB.$prefname."value")
-		if ($prefsA.$prefname -and $prefsB.$prefname) {
-			if ($prefsA.$prefname."inactive" -ne $prefsB.$prefname."inactive") {
-				if ($prefsA.$prefname."value" -ceq $prefsB.$prefname."value") {
-					if ($prefsA.$prefname."inactive") {
+		if ($prefsA.$prefname) { $entriesA = $prefsA.$prefname } else { $entriesA = @() }
+		if ($prefsB.$prefname) { $entriesB = $prefsB.$prefname } else { $entriesB = @() }
+		$format_arA = @($entriesA[-1].inactive, $prefname, [string]$entriesA[-1].value)
+		$format_arB = @($entriesB[-1].inactive, $prefname, [string]$entriesB[-1].value)
+		if ($entriesA -and $entriesB) {
+			if ($entriesA[-1].inactive -ne $entriesB[-1].inactive) {
+				if ($entriesA[-1].value -ceq $entriesB[-1].value) {
+					if ($entriesA[-1].inactive) {
 						$inactive_in_A += $list_format -f $format_arB
 					} else {$inactive_in_B += $list_format -f $format_arA}
 				} else {
 					if ($script:inJS) {
 						$fully_mismatching += $nl +
-							($dlist_format -f $fileNameA, $prefsA.$prefname."inactive", $prefname, $prefsA.$prefname."value") +
-							($dlist_format -f $fileNameB, $prefsB.$prefname."inactive", $prefname, $prefsB.$prefname."value")
+							($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
+							($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
 					} else {
-						$fully_mismatching += ($list_format -f "", $prefname, "") +
-							($dlist_format -f $prefsA.$prefname."inactive", $fileNameA, $prefsA.$prefname."value") +
-							($dlist_format -f $prefsB.$prefname."inactive", $fileNameB, $prefsB.$prefname."value")
+						$fully_mismatching += ($list_format -f '', $prefname, '') +
+							($dlist_format -f $entriesA[-1].inactive, $fileNameA, $entriesA[-1].value) +
+							($dlist_format -f $entriesB[-1].inactive, $fileNameB, $entriesB[-1].value)
 					}
 				}
-			} elseif ($prefsA.$prefname."value" -ceq $prefsB.$prefname."value") {
+			} elseif ($entriesA[-1].value -ceq $entriesB[-1].value) {
 				$matching_prefs += $list_format -f $format_arA
 			} else {
 				if ($script:inJS) {
 					$differences += $nl +
-						($dlist_format -f $fileNameA, $prefsA.$prefname."inactive", $prefname, $prefsA.$prefname."value") +
-						($dlist_format -f $fileNameB, $prefsB.$prefname."inactive", $prefname, $prefsB.$prefname."value")
+						($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
+						($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
 				} else {
 					$temp = $format_arA
 					$temp[2] = ''
 					$differences += ($list_format -f $temp) +
-						($dlist_format -f '', $fileNameA, $prefsA.$prefname."value") +
-						($dlist_format -f '', $fileNameB, $prefsB.$prefname."value")
+						($dlist_format -f '', $fileNameA, $entriesA[-1].value) +
+						($dlist_format -f '', $fileNameB, $entriesB[-1].value)
 				}
 			}
-		} elseif ($prefsA.$prefname) {
+		} elseif ($entriesA) {
 			$missing_in_B += $list_format -f $format_arA
 		} else {$missing_in_A += $list_format -f $format_arB}
-		if ($prefsA.$prefname."broken") {$bad_syntax_A += $list_format -f $format_arA}
-		if ($prefsB.$prefname."broken") {$bad_syntax_B += $list_format -f $format_arB}
+		if ($entriesA[-1].broken) {$bad_syntax_A += $list_format -f $format_arA}
+		if ($entriesB[-1].broken) {$bad_syntax_B += $list_format -f $format_arB}
+
+		if ($entriesA.count -gt 1) {
+			if ($dups_A_count) { $dups_in_A = "{0, -3} {1, -1}$nl" -f '', '---' + $dups_in_A }
+			$dups_A_count += 1
+			ForEach ($entry in $entriesA) {
+				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
+			}
+		}
+
+		if ($entriesB.count -gt 1) {
+			if ($dups_B_count) { $dups_in_B = "{0, -3} {1, -1}$nl" -f '', '---' + $dups_in_B }
+			$dups_B_count += 1
+			ForEach ($entry in $entriesB) {
+				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
+			}
+		}
 	}
 
 	if ($matching_prefs) {
@@ -322,6 +347,11 @@ Function Write-Report {
 	if ($bad_syntax_B) {
 		$errors_B_count = ($bad_syntax_B.Split("`n").count - 1)
 		$summary_format -f $errors_B_count, "prefs in $fileNameB seem to have broken values"}
+	if ($dups_A_count -or $dups_B_count) {
+		''
+		if ($dups_A_count) { $summary_format -f $dups_A_count, "duplicated prefs in $fileNameA"	}
+		if ($dups_B_count) { $summary_format -f $dups_B_count, "duplicated prefs in $fileNameB"	}
+	}
 
 	if (!$script:inJS) { "$nl Reference:  [i] inactive pref (commented-out)$nl" }
 	JSCom 1
@@ -345,6 +375,10 @@ Function Write-Report {
 		$sep + (JSCom) + " $errors_A_count possible syntax errors detected in $fileNameA`:$nl$nl$bad_syntax_A$nl" }
 	if ($bad_syntax_B -and !($script:hideMask -band 128)) {
 		$sep + (JSCom) + " $errors_B_count possible syntax errors detected in $fileNameB`:$nl$nl$bad_syntax_B$nl" }
+	if ($dups_A_count -and !($script:hideMask -band 256)) {
+		$sep + (JSCom) + " The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$dups_in_A$nl" }
+	if ($dups_B_count -and !($script:hideMask -band 256)) {
+		$sep + (JSCom) + " The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$dups_in_B$nl" }
 }
 
 #----------------[ Main Execution ]----------------------------------------------------
