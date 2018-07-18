@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.6
+	Version: 1.12.7
 	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -124,8 +124,7 @@ $rx_s = "(?:""(?:[^""]|(?<=\\)"")*"")|(?:'(?:[^']|(?<=\\)')*')"
 $rx_sc = "(?:(?:""((?:[^""]|(?<=\\)"")*)"")|(?:'((?:[^']|(?<=\\)')*)'))"
 
 if ($inJS) {
-	if ($outputFile -ceq 'userJS_diff.log') {
-		$outputFile = 'userJS_diff.js'}
+	if ($outputFile -ceq 'userJS_diff.log') { $outputFile = 'userJS_diff.js' }
 	$inactive_flag = '//'
 } else { $inactive_flag = '[i]' }
 
@@ -217,22 +216,17 @@ Function Write-Report {
 	Param()
 
 	# Report chunks, to be formatted as multi-line strings (lists)
-	$matching_prefs = ''		# matching pref values
-	$differences = ''			# different-value prefs
-	$missing_in_A = ''			# prefs not declared
-	$missing_in_B = ''
-	$inactive_in_A = ''			# matching value but inactive
-	$inactive_in_B = ''
-	$fully_mismatching = ''		# different state and value
-	$bad_syntax_A = ''			# possible syntax errors
-	$bad_syntax_B = ''
-	$dups_in_A = ''				# duplicates
-	$dups_in_B = ''
+	$matching_prefs = ''					# matching values
+	$differences = ''						# different values
+	$missing_in_A = $missing_in_B = ''		# not declared
+	$inactive_in_A = $inactive_in_B = ''	# matching value but mismatching state
+	$fully_mismatching = ''					# mismatching states and values
+	$bad_syntax_A = $bad_syntax_B = ''		# possible syntax errors
+	$dups_in_A = $dups_in_B = ''			# duplicates
 
-	$dups_A_count = 0			# counts of prefs with duplicate entries
-	$dups_B_count = 0
+	$dups_A_count = $dups_B_count = 0		# counts of prefs with duplicate entries
 
-	# Get list of unique prefs and sort them in alphabetical order
+	# Get list of unique prefs sorted alphabetically
 	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
 
 	# Get the length of the longest prefname, which will be used for padding the output.
