@@ -43,16 +43,16 @@ If you don't want to type that much (and you're on Windows), you can alternative
 
 ## Parameters
 
-**Index** | **Name** | **Default** | **Description**
---- | --- | --- | ---
-0 | `filePath_A` |  | Path to the first file to compare. Can be absolute or relative.
-1 | `filePath_B` |  | Path to the second file to compare. Can also be relative.
-2 | `ouputFile` | *userJS_diff.log* | Path to the file where the report will be dumped. Can be relative.
-3 | `append` |  | Append the report to the end of the file, instead of rewriting if a file by that name exists.
-4 | `noCommentsA` |  | Parse JS comments in file A as code (not as comments). Makes parsing faster when you know beforehand that file A doesn't have inactive prefs.
-5 | `noCommentsB` |  | Parse JS comments in file B as code.
-6 | `hideMask` | 0 | Bitmask value for hiding parts of the report selectively. See the embedded help info for details.
-7 | `inJS` |  | Get the report written in JavaScript. It will be written to *userJS_diff.js* unless the `-outputFile` parameter is specified.
+**Index** | **Name** | **Required?** | **Default** | **Description**
+:---: | :---: | :---: | :---: | ---
+0 | `filePath_A` | Yes |  | Path to the first file to compare. Can be absolute or relative.
+1 | `filePath_B` | Yes |  | Path to the second file to compare. Can also be relative.
+2 | `ouputFile` | No | *userJS_diff.log* | Path to the file where the report will be dumped. Can be relative.
+3 | `append` | No | false | Append the report to the end of the file, instead of rewriting if a file by that name exists.
+4 | `noCommentsA` | No | false | Parse JS comments in file A as code (not as comments). Makes parsing faster when you know beforehand that file A doesn't have inactive prefs.
+5 | `noCommentsB` | No | false | Parse JS comments in file B as code.
+6 | `hideMask` | No | 0 | Bitmask value for hiding parts of the report selectively. See the embedded help info for details.
+7 | `inJS` | No | false | Get the report written in JavaScript. It will be written to *userJS_diff.js* unless the `-outputFile` parameter is specified.
 
 <br>
 <details><summary> Click to see what the output looks like (v1.4.1). :point_left: </summary><p>
