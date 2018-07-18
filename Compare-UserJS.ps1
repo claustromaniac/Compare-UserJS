@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.2
+	Version: 1.12.3
 	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -300,16 +300,14 @@ Function Write-Report {
 		if ($entriesB[-1].broken) {$bad_syntax_B += $list_format -f $format_arB}
 
 		if ($entriesA.count -gt 1) {
-			if ($dups_A_count) { $dups_in_A = "    ---$nl" + $dups_in_A }
-			$dups_A_count += 1
+			if ($dups_A_count++) { $dups_in_A += "    ---$nl" }
 			ForEach ($entry in $entriesA) {
 				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
 		}
 
 		if ($entriesB.count -gt 1) {
-			if ($dups_B_count) { $dups_in_B = "    ---$nl" + $dups_in_B }
-			$dups_B_count += 1
+			if ($dups_B_count++) { $dups_in_B += "    ---$nl" }
 			ForEach ($entry in $entriesB) {
 				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
