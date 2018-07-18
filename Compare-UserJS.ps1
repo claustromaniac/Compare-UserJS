@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.1
-	Update Date: 2018-07-17
+	Version: 1.12.2
+	Update Date: 2018-07-18
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -300,7 +300,7 @@ Function Write-Report {
 		if ($entriesB[-1].broken) {$bad_syntax_B += $list_format -f $format_arB}
 
 		if ($entriesA.count -gt 1) {
-			if ($dups_A_count) { $dups_in_A = "{0, -3} {1, -1}$nl" -f '', '---' + $dups_in_A }
+			if ($dups_A_count) { $dups_in_A = "    ---$nl" + $dups_in_A }
 			$dups_A_count += 1
 			ForEach ($entry in $entriesA) {
 				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
@@ -308,7 +308,7 @@ Function Write-Report {
 		}
 
 		if ($entriesB.count -gt 1) {
-			if ($dups_B_count) { $dups_in_B = "{0, -3} {1, -1}$nl" -f '', '---' + $dups_in_B }
+			if ($dups_B_count) { $dups_in_B = "    ---$nl" + $dups_in_B }
 			$dups_B_count += 1
 			ForEach ($entry in $entriesB) {
 				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
