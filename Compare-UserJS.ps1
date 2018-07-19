@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.13.1
+	Version: 1.14.0
 	Update Date: 2018-07-19
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -149,16 +149,18 @@ Function Get-UserJSPrefs {
 	# Function for parsing pref declarations, extracting prefnames and values, populating the root hashtables.
 	Param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
-	# Remove unnecessary spaces and line breaks from the target JS expressions. Also, let's split lines at semicolons, just in case.
-	$fileStr = $fileStr -creplace ("(?s)pref\s*\(\s*" + $rx_sc + "\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
+	$fileStr = $fileStr -creplace "\n", ''
+
+	# Remove unnecessary spaces from the target JS expressions. Also, let's split lines at semicolons.
+	$fileStr = $fileStr -creplace ("pref\s*\(\s*" + $rx_sc + "\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
 
 	# Read line by line
 	ForEach ($line in $fileStr.Split("`n")) {
-		$prefname = ($line -creplace (".*pref\s*\(\s*" + $rx_sc + "\s*,.*\)\s*;.*"), '$1$2')
+		$prefname = ($line -creplace (".*pref\(" + $rx_sc + ",.*\);.*"), '$1$2')
 		if ($prefname -ceq $line) {continue}
-		$val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,\s*(?:(true|false|-?[0-9]+)|(?:" + $rx_sc + "))\s*\)\s*;.*"), '$1$2$3')
+		$val = ($line -creplace (".*pref\((?:" + $rx_s + "),(?:(true|false|-?[0-9]+)|(?:" + $rx_sc + "))\);.*"), '$1$2$3')
 		$broken = ($val -ceq $line)
-		if ($broken) { $val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1') }
+		if ($broken) { $val = ($line -creplace (".*pref\((?:" + $rx_s + "),(.*?)\);.*"), '$1') }
 		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = """$val"""}
 		[hashtable[]]$prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
 	}
@@ -172,8 +174,8 @@ Function Read-SLCom {
 	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
 	# Trim everything before //
 	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", '//'
-	# Split up lines at // just in case
-	$fileStr = $fileStr -creplace "//$rx_c", "`n"
+	# Remove all the valid remaining instances of //
+	$fileStr = $fileStr -creplace "//$rx_c", ''
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -185,7 +187,7 @@ Function Read-MLCom {
 	# Make sure there are lines with multi-line comments, return otherwise
 	if (!($fileStr -cmatch ("(?s)/\*" + $rx_c + ".*\*/$rx_c"))) { return }
 	# Trim text between multi-line comments
-	$fileStr_ = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
+	$fileStr_ = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/ /*")
 	# Remove leading text
 	$fileStr_ = ($fileStr_ -creplace "(?s)^.*?/\*$rx_c", '/*')
 	# Remove trailing text
@@ -202,7 +204,7 @@ Function Read-ActivePrefs {
 
 	if ($comments) {
 		# Remove multi-line comments
-		$fileStr = ($fileStr -creplace ("(?s)/\*" + $rx_c + ".*?\*/$rx_c"), "`n")
+		$fileStr = ($fileStr -creplace ("(?s)/\*" + $rx_c + ".*?\*/$rx_c"), '')
 		# Remove single-line comments
 		$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), '')
 	}
