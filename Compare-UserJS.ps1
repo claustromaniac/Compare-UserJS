@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.12.7
-	Update Date: 2018-07-18
+	Version: 1.13.1
+	Update Date: 2018-07-19
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -147,7 +147,7 @@ Function JSCom {
 
 Function Get-UserJSPrefs {
 	# Function for parsing pref declarations, extracting prefnames and values, populating the root hashtables.
-	Param([hashtable]$prefs_ht, [string]$fileStr, [string]$inactive_flag = $script:inactive_flag)
+	Param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
 	# Remove unnecessary spaces and line breaks from the target JS expressions. Also, let's split lines at semicolons, just in case.
 	$fileStr = $fileStr -creplace ("(?s)pref\s*\(\s*" + $rx_sc + "\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
@@ -160,8 +160,7 @@ Function Get-UserJSPrefs {
 		$broken = ($val -ceq $line)
 		if ($broken) { $val = ($line -creplace (".*pref\s*\(\s*(?:" + $rx_s + ")\s*,(.*?)\)\s*;.*"), '$1') }
 		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = """$val"""}
-		if ($prefs_ht.$prefname) { $prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val } }
-		else { [hashtable[]]$prefs_ht.$prefname = @{ inactive=$inactive_flag; broken=$broken; value=$val } }
+		[hashtable[]]$prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
 	}
 }
 
@@ -183,14 +182,14 @@ Function Read-MLCom {
 	# Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
+	# Make sure there are lines with multi-line comments, return otherwise
+	if (!($fileStr -cmatch ("(?s)/\*" + $rx_c + ".*\*/$rx_c"))) { return }
 	# Trim text between multi-line comments
 	$fileStr_ = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/`n/*")
 	# Remove leading text
 	$fileStr_ = ($fileStr_ -creplace "(?s)^.*?/\*$rx_c", '/*')
 	# Remove trailing text
 	$fileStr_ = ($fileStr_ -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
-	# Return if no multi-line comments were found
-	if ($fileStr_ -ceq $fileStr) {return}
 	# Remove single-line comments
 	$fileStr_ = ($fileStr_ -creplace ("//" + $rx_c + ".*"), '')
 
@@ -224,7 +223,9 @@ Function Write-Report {
 	$bad_syntax_A = $bad_syntax_B = ''		# possible syntax errors
 	$dups_in_A = $dups_in_B = ''			# duplicates
 
-	$dups_A_count = $dups_B_count = 0		# counts of prefs with duplicate entries
+	# Vars for counting the results in each given list
+	$matches_count = $diffs_count = $missing_A_count = $missing_B_count = $inactive_A_count = $inactive_B_count = 0
+	$fm_count = $errors_A_count = $errors_B_count = $dups_A_count = $dups_B_count = $dups_A_count = $dups_B_count = 0
 
 	# Get list of unique prefs sorted alphabetically
 	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
@@ -261,9 +262,14 @@ Function Write-Report {
 			if ($entriesA[-1].inactive -ne $entriesB[-1].inactive) {
 				if ($entriesA[-1].value -ceq $entriesB[-1].value) {
 					if ($entriesA[-1].inactive) {
+						$inactive_A_count++
 						$inactive_in_A += $list_format -f $format_arB
-					} else {$inactive_in_B += $list_format -f $format_arA}
+					} else {
+						$inactive_B_count++
+						$inactive_in_B += $list_format -f $format_arA
+					}
 				} else {
+					$fm_count++
 					if ($script:inJS) {
 						$fully_mismatching += $nl +
 							($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
@@ -275,8 +281,10 @@ Function Write-Report {
 					}
 				}
 			} elseif ($entriesA[-1].value -ceq $entriesB[-1].value) {
+				$matches_count++
 				$matching_prefs += $list_format -f $format_arA
 			} else {
+				$diffs_count++
 				if ($script:inJS) {
 					$differences += $nl +
 						($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
@@ -288,18 +296,26 @@ Function Write-Report {
 				}
 			}
 		} elseif ($entriesA) {
+			$missing_B_count++
 			$missing_in_B += $list_format -f $format_arA
-		} else {$missing_in_A += $list_format -f $format_arB}
-		if ($entriesA[-1].broken) {$bad_syntax_A += $list_format -f $format_arA}
-		if ($entriesB[-1].broken) {$bad_syntax_B += $list_format -f $format_arB}
-
+		} else {
+			$missing_A_count++
+			$missing_in_A += $list_format -f $format_arB
+		}
+		if ($entriesA[-1].broken) {
+			$errors_A_count++
+			$bad_syntax_A += $list_format -f $format_arA
+		}
+		if ($entriesB[-1].broken) {
+			$errors_B_count++
+			$bad_syntax_B += $list_format -f $format_arB
+		}
 		if ($entriesA.count -gt 1) {
 			if ($dups_A_count++) { $dups_in_A += $nl }
 			ForEach ($entry in $entriesA) {
 				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
 		}
-
 		if ($entriesB.count -gt 1) {
 			if ($dups_B_count++) { $dups_in_B += $nl }
 			ForEach ($entry in $entriesB) {
@@ -308,37 +324,19 @@ Function Write-Report {
 		}
 	}
 
-	if ($matching_prefs) {
-		$matches_count = ($matching_prefs.Split("`n").count - 1)
-		$summary_format -f $matches_count, 'matching prefs, both value and state (active/inactive)'}
-	if ($differences) {
-		$diffs_count = (($differences.Split("`n").count - 1) / 3)
-		$summary_format -f $diffs_count, 'prefs with different values but matching state'}
-	if ($missing_in_A) {
-		$missing_A_count = ($missing_in_A.Split("`n").count - 1)
-		$summary_format -f $missing_A_count, "prefs not declared in $fileNameA" }
-	if ($missing_in_B) {
-		$missing_B_count = ($missing_in_B.Split("`n").count - 1)
-		$summary_format -f $missing_B_count, "prefs not declared in $fileNameB" }
-	if ($inactive_in_A) {
-		$inactive_A_count = ($inactive_in_A.Split("`n").count - 1)
-		$summary_format -f $inactive_A_count, "prefs with matching values but inactive in $fileNameA" }
-	if ($inactive_in_B) {
-		$inactive_B_count = ($inactive_in_B.Split("`n").count - 1)
-		$summary_format -f $inactive_B_count, "prefs with matching values but inactive in $fileNameB" }
-	if ($fully_mismatching) {
-		$fm_count = ($fully_mismatching.Split("`n").count - 1) / 3
-		$summary_format -f $fm_count, 'prefs with both mismatching values and states' }
+	if ($matches_count) { $summary_format -f $matches_count, 'matching prefs, both value and state (active/inactive)' }
+	if ($diffs_count) {	$summary_format -f $diffs_count, 'prefs with different values but matching state' }
+	if ($missing_A_count) { $summary_format -f $missing_A_count, "prefs not declared in $fileNameA" }
+	if ($missing_B_count) { $summary_format -f $missing_B_count, "prefs not declared in $fileNameB" }
+	if ($inactive_A_count) { $summary_format -f $inactive_A_count, "prefs with matching values but inactive in $fileNameA" }
+	if ($inactive_B_count) { $summary_format -f $inactive_B_count, "prefs with matching values but inactive in $fileNameB" }
+	if ($fm_count) { $summary_format -f $fm_count, 'prefs with both mismatching values and states' }
 	' ----'
 	$summary_format -f $unique_prefs.count, 'combined unique prefs'
 
-	if ($bad_syntax_A -or $bad_syntax_B) {"$nl  Warning:$nl" }
-	if ($bad_syntax_A) {
-		$errors_A_count = ($bad_syntax_A.Split("`n").count - 1)
-		$summary_format -f $errors_A_count, "prefs in $fileNameA seem to have broken values"}
-	if ($bad_syntax_B) {
-		$errors_B_count = ($bad_syntax_B.Split("`n").count - 1)
-		$summary_format -f $errors_B_count, "prefs in $fileNameB seem to have broken values"}
+	if ($errors_A_count -or $errors_B_count) {"$nl  Warning:$nl" }
+	if ($errors_A_count) { $summary_format -f $errors_A_count, "prefs in $fileNameA seem to have broken values"}
+	if ($errors_B_count) { $summary_format -f $errors_B_count, "prefs in $fileNameB seem to have broken values"}
 	if ($dups_A_count -or $dups_B_count) {
 		''
 		if ($dups_A_count) { $summary_format -f $dups_A_count, "duplicated prefs in $fileNameA"	}
@@ -390,23 +388,18 @@ Write-Host "Parsing $fileNameA ..."
 if (!$noCommentsA) {
 	Read-SLCom $prefsA $fileA
 	Read-MLCom $prefsA $fileA
-	Read-ActivePrefs $prefsA $fileA
-} else {
-	Write-Host 'Comments in this file will not be parsed as such.'
-	Read-ActivePrefs $prefsA $fileA $false
-}
+} else { Write-Host 'Comments in this file will not be parsed as such.' }
+Read-ActivePrefs $prefsA $fileA (!$noCommentsA)
+
 Write-Host "Parsing $fileNameB ..."
 if (!$noCommentsB) {
 	Read-SLCom $prefsB $fileB
 	Read-MLCom $prefsB $fileB
-	Read-ActivePrefs $prefsB $fileB
-} else {
-	Write-Host 'Comments in this file will not be parsed as such.'
-	Read-ActivePrefs $prefsB $fileB $false
-}
+} else { Write-Host 'Comments in this file will not be parsed as such.' }
+Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
+
 Write-Host "Writing report to $outputFile ..."
-if ($append) {
-	Write-Report | Out-File -filepath $outputFile -encoding "UTF8" -append -noclobber }
+if ($append) { Write-Report | Out-File -filepath $outputFile -encoding "UTF8" -append -noclobber }
 else { Write-Report | Out-File -filepath $outputFile -encoding "UTF8" }
 $prompt = Read-Host 'All done. Would you like to open the logfile with the default editor? (y/n)'
 if ($prompt -eq 'y') {Invoke-Item -path $outputFile}
