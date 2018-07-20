@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.14.0
-	Update Date: 2018-07-19
+	Version: 1.14.1
+	Update Date: 2018-07-20
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -117,11 +117,11 @@ if ($fileNameA -ceq $fileNameB) {
 	$fileNameA, $fileNameB = $filepath_A, $filepath_B}
 
 # Regular expression for detecting JS comments. Meant to be used as a suffix.
-$rx_c = "(?!(?:(?:[^""]|(?<=\\)"")*""|(?:[^']|(?<=\\)')*')\s*\)\s*;)"
+$rx_c = "(?!(?:(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*""|(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')\s*\)\s*;)"
 # Regular expression for matching prefname or value string. Must be used within groups.
-$rx_s = "(?:""(?:[^""]|(?<=\\)"")*"")|(?:'(?:[^']|(?<=\\)')*')"
+$rx_s = "(?:""(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*"")|(?:'(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')"
 # Regular expression for capturing prefname or value string. Includes two capturing groups.
-$rx_sc = "(?:(?:""((?:[^""]|(?<=\\)"")*)"")|(?:'((?:[^']|(?<=\\)')*)'))"
+$rx_sc = "(?:(?:""((?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*)"")|(?:'((?:[^']|(?<=[^\\]\\(?:\\\\)*)')*)'))"
 
 if ($inJS) {
 	if ($outputFile -ceq 'userJS_diff.log') { $outputFile = 'userJS_diff.js' }
