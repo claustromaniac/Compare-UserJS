@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.14.2
-	Update Date: 2018-07-20
+	Version: 1.14.3
+	Update Date: 2018-07-21
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -171,8 +171,8 @@ Function Read-SLCom {
 
 	# Get only lines with single-line comments
 	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
-	# Trim everything before //
-	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", '//'
+	# Trim everything up to //
+	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", ''
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
