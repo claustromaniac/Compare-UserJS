@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.14.1
+	Version: 1.14.2
 	Update Date: 2018-07-20
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -113,8 +113,7 @@ $prefsA = @{}; $prefsB = @{}
 $fileNameA = (Split-Path -path $filepath_A -leaf)
 $fileNameB = (Split-Path -path $filepath_B -leaf)
 
-if ($fileNameA -ceq $fileNameB) {
-	$fileNameA, $fileNameB = $filepath_A, $filepath_B}
+if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepath_B }
 
 # Regular expression for detecting JS comments. Meant to be used as a suffix.
 $rx_c = "(?!(?:(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*""|(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')\s*\)\s*;)"
@@ -174,8 +173,6 @@ Function Read-SLCom {
 	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
 	# Trim everything before //
 	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", '//'
-	# Remove all the valid remaining instances of //
-	$fileStr = $fileStr -creplace "//$rx_c", ''
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -187,15 +184,15 @@ Function Read-MLCom {
 	# Make sure there are lines with multi-line comments, return otherwise
 	if (!($fileStr -cmatch ("(?s)/\*" + $rx_c + ".*\*/$rx_c"))) { return }
 	# Trim text between multi-line comments
-	$fileStr_ = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/ /*")
+	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/ /*")
 	# Remove leading text
-	$fileStr_ = ($fileStr_ -creplace "(?s)^.*?/\*$rx_c", '/*')
+	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", '/*')
 	# Remove trailing text
-	$fileStr_ = ($fileStr_ -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
 	# Remove single-line comments
-	$fileStr_ = ($fileStr_ -creplace ("//" + $rx_c + ".*"), '')
+	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), '')
 
-	Get-UserJSPrefs $prefs_ht $fileStr_
+	Get-UserJSPrefs $prefs_ht $fileStr
 }
 
 Function Read-ActivePrefs {
