@@ -18,7 +18,7 @@ Things detected (and reported) by this script:
 
 Additionally, it can catch one type of syntax error when declaring prefs, and includes that information in the report.
 
-## Usage
+## ► Usage
 
 Simply save this script wherever you want, launch the PowerShell CLI, [CD to that folder](https://ss64.com/ps/set-location.html), and run it, as in:
 
@@ -43,7 +43,7 @@ If you don't want to type that much (and you're on Windows), you can alternative
 
 You can see an example of what the output looks like [here](https://github.com/claustromaniac/Compare-UserJS/blob/master/userJS_diff.log).
 
-## Parameters
+## ► Parameters
 
 **Index** | **Name** | **Required?** | **Default** | **Description**
 :---: | :---: | :---: | :---: | ---
@@ -56,10 +56,10 @@ You can see an example of what the output looks like [here](https://github.com/c
 6 | `hideMask` | No | 0 | Bitmask value for hiding parts of the report selectively. See the embedded help info for details.
 7 | `inJS` | No | false | Get the report written in JavaScript. It will be written to *userJS_diff.js* unless the `-outputFile` parameter is specified.
 
-## F.A.Q. <sup>(assuming it counts when I'm the one asking)</sup>
+## ► F.A.Q. <sup>(assuming it counts when I'm the one asking)</sup>
 
 #### Q: Why the heck did you make this?
 A: Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under 200 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm hooked on regular expressions.
 
-## Acknowledgements
+## ► Acknowledgements
 [Thorin-Oakenpants](https://github.com/Thorin-Oakenpants) and [earthlng](https://github.com/earthlng) for their valuable feedback on the initial stages of this little project.
