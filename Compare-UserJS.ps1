@@ -181,7 +181,7 @@ Function Read-MLCom {
 	# Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
-	# Make sure there are lines with multi-line comments, return otherwise
+	# Make sure there are multi-line comments, return otherwise
 	if (!($fileStr -cmatch ("(?s)/\*" + $rx_c + ".*\*/$rx_c"))) { return }
 	# Trim text between multi-line comments
 	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/ /*")
