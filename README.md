@@ -2,7 +2,7 @@
 
 No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). Side note: for enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
 
-This script requires only PS v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
+This script requires only PowerShell v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
 
 Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to userJS_diff.log.
 
