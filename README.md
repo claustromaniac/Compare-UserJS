@@ -72,7 +72,7 @@ Parameters
 <br><br>
 
 
-F.A.Q. <sup><sub>(assuming it counts when I'm the one asking)<sub></sup>
+F.A.Q. <sup><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sup>
 -------
 
 *Q: Why the heck did you make this?*
