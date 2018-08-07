@@ -1,4 +1,5 @@
-# Compare-UserJS
+Compare-UserJS
+==============
 
 No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). Side note: for enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
 
@@ -20,7 +21,8 @@ Additionally, it can catch one type of syntax error when declaring prefs, and in
 <br><br>
 
 
-## Usage
+Usage
+------
 
 Simply save this script wherever you want, launch the PowerShell CLI, [CD to that folder](https://ss64.com/ps/set-location.html), and run it, as in:
 
@@ -47,7 +49,8 @@ You can see an example of what the output looks like [here](userJS_diff.log).
 <br><br>
 
 
-## Parameters
+Parameters
+-----------
 
 |**Index** |   **Name**    | **Required?** |    **Default**    |                        **Description**                        |
 |:--------:|:-------------:|:-------------:|:-----------------:|---------------------------------------------------------------|
@@ -67,12 +70,14 @@ You can see an example of what the output looks like [here](userJS_diff.log).
 <br><br>
 
 
-## F.A.Q. <sup>(assuming it counts when I'm the one asking)</sup>
+F.A.Q. <sup><sub>(assuming it counts when I'm the one asking)<sub></sup>
+-------
 
 #### Q: Why the heck did you make this?
 A: Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm hooked on regular expressions.
 <br><br>
 
 
-## Acknowledgements
+Acknowledgements
+-----------------
 [Thorin-Oakenpants](https://github.com/Thorin-Oakenpants) and [earthlng](https://github.com/earthlng) for their valuable feedback on the initial stages of this little project.
