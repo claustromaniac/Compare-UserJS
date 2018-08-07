@@ -1,11 +1,12 @@
 Compare-UserJS
 ==============
 
-No idea what user.js is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences). Side note: for enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).
+No idea what *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).
+*Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
 
-This script requires only PowerShell v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
+This script requires only [PowerShell](https://github.com/PowerShell/PowerShell) v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
 
-Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to userJS_diff.log.
+Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to *userJS_diff.log*.
 
 Things detected (and reported) by this script:
 
@@ -17,7 +18,7 @@ Things detected (and reported) by this script:
 - prefs declared within JS comments (inactive) in B but active in A
 - duplicated prefs in each of the two source files.
 
-Additionally, it can catch one type of syntax error when declaring prefs, and includes that information in the report.
+Additionally, it can catch one type of syntax error (for now), and includes that information in the report.
 <br><br>
 
 
@@ -43,7 +44,7 @@ Get-Help .\Compare-UserJS -full
 
 Or just read it from the file, but that's less thrilling.
 
-If you don't want to type that much (and you're on Windows), you can alternatively run the batch script Compare-UserJS.bat from the same folder as the PS script. It works as a launcher that bypasses the PS execution policy. Saves you opening the CLI, CD'ing and typing in the command, but Compare-UserJS will still have you type in the paths of the two user.js files unless you drag and drop them to the BAT directly. Compare-UserJS will still NOT make you coffee, though.
+If you don't want to type that much (and you're on Windows), you can alternatively run the batch script *Compare-UserJS.bat* from the same folder as the PS script. It works as a launcher that bypasses the PS execution policy. Saves you opening the CLI, CD'ing and typing in the command, but Compare-UserJS will still have you type in the paths of the two *user.js* files unless you drag-and-drop them on the BAT directly. Compare-UserJS will still NOT make you coffee, though.
 
 You can see an example of what the output looks like [here](userJS_diff.log).
 <br><br>
@@ -66,14 +67,14 @@ Parameters
 **1:** All path parameters can be absolute or relative. 
 **2:** Mostly deprecated. It should make parsing slightly faster with files that you know beforehand that don't have comments. 
 **3:** See the embedded help info for details. 
-**4:** It will be written to userJS_diff.js unless the `-outputFile` parameter is also specified.
+**4:** It will be written to *userJS_diff.js* unless the `-outputFile` parameter is also specified.
 <br><br>
 
 
 F.A.Q. <sup><sub>(assuming it counts when I'm the one asking)<sub></sup>
 -------
 
-#### Q: Why the heck did you make this?
+*Q: Why the heck did you make this?*
 A: Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm hooked on regular expressions.
 <br><br>
 
