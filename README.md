@@ -1,9 +1,7 @@
 Compare-UserJS
 ==============
 
-No idea what *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).
-
-*Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
+No idea what *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).<br> *Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
 
 This script requires only [PowerShell](https://github.com/PowerShell/PowerShell) v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
 
@@ -12,12 +10,12 @@ Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorit
 Things detected (and reported) by this script:
 
 - matching prefs, both value and state (active/inactive)
-- prefs with different values but same matching state
-- prefs declared in file A that are not declared in file B
-- prefs declared in file B that are not declared in file A
-- prefs declared within JS comments (inactive) in A but active in B
-- prefs declared within JS comments (inactive) in B but active in A
-- duplicated prefs in each of the two source files.
+- prefs with different values but matching state
+- prefs declared in file A but not in file B
+- declared in file B but not in file A
+- inactive (declared within JS comments) in A but active in B
+- inactive in B but active in A
+- duplicates in each of the two source files.
 
 Additionally, it can catch one type of syntax error (for now), and includes that information in the report.
 <br><br>
@@ -26,7 +24,7 @@ Additionally, it can catch one type of syntax error (for now), and includes that
 Usage
 ------
 
-Simply save this script wherever you want, launch the PowerShell CLI, [CD to that folder](https://ss64.com/ps/set-location.html), and run it, as in:
+Simply save this script wherever you want, launch the PowerShell CLI, [CD to the path of the script](https://ss64.com/ps/set-location.html), and run it, as in:
 
 ```PowerShell
 CD C:\path\to\the\script
