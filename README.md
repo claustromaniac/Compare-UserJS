@@ -2,6 +2,7 @@ Compare-UserJS
 ==============
 
 No idea what *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).
+
 *Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
 
 This script requires only [PowerShell](https://github.com/PowerShell/PowerShell) v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
