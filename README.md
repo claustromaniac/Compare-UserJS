@@ -73,7 +73,8 @@ Parameters
 F.A.Q. <sup><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sup>
 -------
 
-*Q: Why the heck did you make this?*
+**Q: Why the heck did you make this?**
+
 A: Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm hooked on regular expressions.
 <br><br>
 
