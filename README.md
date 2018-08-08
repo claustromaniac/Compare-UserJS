@@ -63,7 +63,7 @@ Parameters
 |    6     |  `hideMask`   |      No       |         0         | Bitmask value for hiding parts of the report selectively. (3) |
 |    7     |    `inJS`     |      No       |       false       | Get the report written in JavaScript. (4)                     |
 
-<sub><em><br>
+<sub><em>
   1 - All path parameters can be absolute or relative. <br>
   2 - Mostly deprecated. It should make parsing slightly faster with files that you know beforehand that don't have comments. <br> 
   3 - See the embedded help info for details. <br>
