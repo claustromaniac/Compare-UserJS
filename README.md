@@ -52,16 +52,16 @@ You can see an example of what the output looks like [here](userJS_diff.log).
 Parameters
 -----------
 
-|**Index** |   **Name**    | **Required?** |    **Default**    |                        **Description**                            |
-|:--------:|:-------------:|:-------------:|:-----------------:|-------------------------------------------------------------------|
-|    0     | `filePath_A`  |      Yes      |                   | Path to the first file to compare. **(1)**                        |
-|    1     | `filePath_B`  |      Yes      |                   | Path to the second file to compare.                               |
-|    2     |  `ouputFile`  |      No       | *userJS_diff.log* | Path to the file where the report will be dumped.                 |
-|    3     |   `append`    |      No       |       false       | Append the report to the end of the file if it already exists.    |
-|    4     | `noCommentsA` |      No       |       false       | Parse JS comments in file A as code. **(2)**                      |
-|    5     | `noCommentsB` |      No       |       false       | Parse JS comments in file B as code.                              |
-|    6     |  `hideMask`   |      No       |         0         | Bitmask value for hiding parts of the report selectively. **(3)** |
-|    7     |    `inJS`     |      No       |       false       | Get the report written in JavaScript. **(4)**                     |
+|**Index** |   **Name**    | **Required?** |    **Default**    |                        **Description**                        |
+|:--------:|:-------------:|:-------------:|:-----------------:|---------------------------------------------------------------|
+|    0     | `filePath_A`  |      Yes      |                   | Path to the first file to compare. (1)                        |
+|    1     | `filePath_B`  |      Yes      |                   | Path to the second file to compare.                           |
+|    2     |  `ouputFile`  |      No       | *userJS_diff.log* | Path to the file where the report will be dumped.             |
+|    3     |   `append`    |      No       |       false       | Append the report to the end of the file if it already exists.|
+|    4     | `noCommentsA` |      No       |       false       | Parse JS comments in file A as code. (2)                      |
+|    5     | `noCommentsB` |      No       |       false       | Parse JS comments in file B as code.                          |
+|    6     |  `hideMask`   |      No       |         0         | Bitmask value for hiding parts of the report selectively. (3) |
+|    7     |    `inJS`     |      No       |       false       | Get the report written in JavaScript. (4)                     |
 
 <sub><em><br>
   1 - All path parameters can be absolute or relative. <br>
