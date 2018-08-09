@@ -234,7 +234,7 @@ Function Write-Report {
 	$fm_count = $errors_A_count = $errors_B_count = $dups_A_count = $dups_B_count = $dups_A_count = $dups_B_count = 0
 
 	# Get list of unique prefs sorted alphabetically
-	$unique_prefs = ($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique
+	$unique_prefs = $prefsA.keys + $prefsB.keys | Sort-Object | Get-Unique
 
 	# Get the length of the longest prefname, which will be used for padding the output.
 	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) { $pn_pad = $prefname.length }}
@@ -381,9 +381,9 @@ Function Write-Report {
 
 # Load files into memory.
 Write-Host "Loading $fileNameA ..."
-$fileA = (Get-Content -path $filepath_A | Out-String)
+$fileA = Get-Content -path $filepath_A | Out-String
 Write-Host "Loading $fileNameB ..."
-$fileB = (Get-Content -path $filepath_B | Out-String)
+$fileB = Get-Content -path $filepath_B | Out-String
 
 # Remove carriage returns, if they exist. The source files aren't supposed to have them in the first place.
 $fileA = $fileA -creplace "\r", ''
