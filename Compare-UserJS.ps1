@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.14.4
+	Version: 1.15.0
 	Update Date: 2018-07-21
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -99,6 +99,8 @@ PARAM (
 )
 
 #----------------[ Declarations ]------------------------------------------------------
+
+$myVersion = '1.15.0'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -156,15 +158,15 @@ Function Get-UserJSPrefs {
 	$fileStr = $fileStr -creplace "\n", ''
 
 	# Remove unnecessary spaces from the target JS expressions. Also, let's split lines at semicolons.
-	$fileStr = $fileStr -creplace ("pref\s*\(\s*" + $rx_sc + "\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
+	$fileStr = $fileStr -creplace ("pref\s*\(\s*$rx_sc\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
 
 	# Read line by line
 	ForEach ($line in $fileStr.Split("`n")) {
-		$prefname = ($line -creplace (".*pref\(" + $rx_sc + ",.*\);.*"), '$1$2')
+		$prefname = ($line -creplace (".*pref\($rx_sc,.*\);.*"), '$1$2')
 		if ($prefname -ceq $line) {continue}
-		$val = ($line -creplace (".*pref\((?:" + $rx_s + "),(?:(true|false|-?[0-9]+)|(?:" + $rx_sc + "))\);.*"), '$1$2$3')
+		$val = ($line -creplace (".*pref\((?:$rx_s),(?:(true|false|-?[0-9]+)|(?:$rx_sc))\);.*"), '$1$2$3')
 		$broken = ($val -ceq $line)
-		if ($broken) { $val = ($line -creplace (".*pref\((?:" + $rx_s + "),(.*?)\);.*"), '$1') }
+		if ($broken) { $val = ($line -creplace (".*pref\((?:$rx_s),(.*?)\);.*"), '$1') }
 		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = """$val"""}
 		[hashtable[]]$prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
 	}
@@ -187,15 +189,15 @@ Function Read-MLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Make sure there are multi-line comments, return otherwise
-	if (!($fileStr -cmatch ("(?s)/\*" + $rx_c + ".*\*/$rx_c"))) { return }
+	if (!($fileStr -cmatch ("(?s)/\*$rx_c.*\*/$rx_c"))) { return }
 	# Trim text between multi-line comments
-	$fileStr = ($fileStr -creplace ("(?s)\*/" + $rx_c + ".*?/\*$rx_c"), "*/ /*")
+	$fileStr = ($fileStr -creplace ("(?s)\*/$rx_c.*?/\*$rx_c"), "*/ /*")
 	# Remove leading text
 	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", '/*')
 	# Remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/" + $rx_c + ").*$"), '$1')
+	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/$rx_c).*$"), '$1')
 	# Remove single-line comments
-	$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), '')
+	$fileStr = ($fileStr -creplace ("//"$rx_c.*"), '')
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -206,9 +208,9 @@ Function Read-ActivePrefs {
 
 	if ($comments) {
 		# Remove multi-line comments
-		$fileStr = ($fileStr -creplace ("(?s)/\*" + $rx_c + ".*?\*/$rx_c"), '')
+		$fileStr = ($fileStr -creplace ("(?s)/\*$rx_c.*?\*/$rx_c"), '')
 		# Remove single-line comments
-		$fileStr = ($fileStr -creplace ("//" + $rx_c + ".*"), '')
+		$fileStr = ($fileStr -creplace ("//$rx_c.*"), '')
 	}
 
 	Get-UserJSPrefs $prefs_ht $fileStr ''
@@ -245,13 +247,13 @@ Function Write-Report {
 	$summary_format = '{0, 5} {1, -1}'
 	if ($script:inJS) {
 		$list_format = "{0, -3} pref(""{1, -1}"", {2, -1});$nl"
-		$dlist_format = "/* {0, " + (-$fn_pad) + "} */ {1, -3} pref(""{2, -1}"", {3, -1});$nl"
+		$dlist_format = "/* {0, $(-$fn_pad)} */ {1, -3} pref(""{2, -1}"", {3, -1});$nl"
 	} else {
-		$list_format = "{0, -3} {1, " + (-$pn_pad) + "}  {2, 1}$nl"
-		$dlist_format = "{0, -7} {1, " + (-($fn_pad + 3)) + "}  {2, 1}$nl"
+		$list_format = "{0, -3} {1, $(-$pn_pad)}  {2, 1}$nl"
+		$dlist_format = "{0, -7} {1, $(-($fn_pad+3))}  {2, 1}$nl"
 	}
 
-	(JSCom 1) + '::::::::::::::: { Compare-UserJS Report } :::::::::::::::'
+	"$(JSCom 1)::::::::::::::: { Compare-UserJS Report } ::::::::::::::: $myversion"
 	Get-Date
 	"$nl`Summary:"
 	$summary_format -f $prefsA.count, "unique prefs in $fileNameA"
@@ -350,7 +352,7 @@ Function Write-Report {
 	if (!$script:inJS) { "$nl Reference:  [i] inactive pref (commented-out)$nl" }
 	JSCom 1
 
-	$sep = (JSCom) + "------------------------------------------------------------------------------$nl" + (JSCom)
+	$sep = "$(JSCom)------------------------------------------------------------------------------$nl$(JSCom)"
 	if ($matching_prefs -and !($script:hideMask -band 1)) {
 		"$sep The following $matches_count prefs match in both values and states:$nl$nl$matching_prefs$nl" }
 	if ($differences -and !($script:hideMask -band 2)) {
