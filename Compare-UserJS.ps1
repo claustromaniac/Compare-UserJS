@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.15.1
+	Version: 1.15.2
 	Update Date: 2018-07-21
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -100,7 +100,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = '1.15.1'
+$myVersion = 'v1.15.2'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -197,7 +197,7 @@ Function Read-MLCom {
 	# Remove trailing text
 	$fileStr = $fileStr -creplace "(?s)^(.*\*/$rx_c).*$", '$1'
 	# Remove single-line comments
-	$fileStr = $fileStr -creplace "//"$rx_c.*", ''
+	$fileStr = $fileStr -creplace "//$rx_c.*", ''
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
