@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.15.0
+	Version: 1.15.1
 	Update Date: 2018-07-21
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -100,7 +100,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = '1.15.0'
+$myVersion = '1.15.1'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -162,13 +162,13 @@ Function Get-UserJSPrefs {
 
 	# Read line by line
 	ForEach ($line in $fileStr.Split("`n")) {
-		$prefname = ($line -creplace (".*pref\($rx_sc,.*\);.*"), '$1$2')
+		$prefname = $line -creplace ".*pref\($rx_sc,.*\);.*", '$1$2'
 		if ($prefname -ceq $line) {continue}
-		$val = ($line -creplace (".*pref\((?:$rx_s),(?:(true|false|-?[0-9]+)|(?:$rx_sc))\);.*"), '$1$2$3')
-		$broken = ($val -ceq $line)
-		if ($broken) { $val = ($line -creplace (".*pref\((?:$rx_s),(.*?)\);.*"), '$1') }
-		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) {$val = """$val"""}
-		[hashtable[]]$prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
+		$val = $line -creplace ".*pref\((?:$rx_s),(?:(true|false|-?[0-9]+)|(?:$rx_sc))\);.*", '$1$2$3'
+		$broken = $val -ceq $line
+		if ($broken) { $val = $line -creplace ".*pref\((?:$rx_s),(.*?)\);.*", '$1' }
+		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) { $val = """$val""" }
+		[hashtable[]] $prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
 	}
 }
 
@@ -189,15 +189,15 @@ Function Read-MLCom {
 	Param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Make sure there are multi-line comments, return otherwise
-	if (!($fileStr -cmatch ("(?s)/\*$rx_c.*\*/$rx_c"))) { return }
+	if (!($fileStr -cmatch "(?s)/\*$rx_c.*\*/$rx_c")) { return }
 	# Trim text between multi-line comments
-	$fileStr = ($fileStr -creplace ("(?s)\*/$rx_c.*?/\*$rx_c"), "*/ /*")
+	$fileStr = $fileStr -creplace "(?s)\*/$rx_c.*?/\*$rx_c", "*/ /*"
 	# Remove leading text
-	$fileStr = ($fileStr -creplace "(?s)^.*?/\*$rx_c", '/*')
+	$fileStr = $fileStr -creplace "(?s)^.*?/\*$rx_c", '/*'
 	# Remove trailing text
-	$fileStr = ($fileStr -creplace ("(?s)^(.*\*/$rx_c).*$"), '$1')
+	$fileStr = $fileStr -creplace "(?s)^(.*\*/$rx_c).*$", '$1'
 	# Remove single-line comments
-	$fileStr = ($fileStr -creplace ("//"$rx_c.*"), '')
+	$fileStr = $fileStr -creplace "//"$rx_c.*", ''
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -208,9 +208,9 @@ Function Read-ActivePrefs {
 
 	if ($comments) {
 		# Remove multi-line comments
-		$fileStr = ($fileStr -creplace ("(?s)/\*$rx_c.*?\*/$rx_c"), '')
+		$fileStr = $fileStr -creplace "(?s)/\*$rx_c.*?\*/$rx_c", ''
 		# Remove single-line comments
-		$fileStr = ($fileStr -creplace ("//$rx_c.*"), '')
+		$fileStr = $fileStr -creplace "//$rx_c.*", ''
 	}
 
 	Get-UserJSPrefs $prefs_ht $fileStr ''
@@ -234,10 +234,10 @@ Function Write-Report {
 	$fm_count = $errors_A_count = $errors_B_count = $dups_A_count = $dups_B_count = $dups_A_count = $dups_B_count = 0
 
 	# Get list of unique prefs sorted alphabetically
-	$unique_prefs = (($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique)
+	$unique_prefs = ($prefsA.keys + $prefsB.keys | Sort-Object) | Get-Unique
 
 	# Get the length of the longest prefname, which will be used for padding the output.
-	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) {$pn_pad = $prefname.length}}
+	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) { $pn_pad = $prefname.length }}
 
 	# Get the length of the longest filename, also for padding the output.
 	if ($script:fileNameA.length -ge $script:fileNameB.length) { $fn_pad = $script:fileNameA.length }
