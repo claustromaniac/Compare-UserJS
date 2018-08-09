@@ -48,7 +48,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.14.3
+	Version: 1.14.4
 	Update Date: 2018-07-21
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -102,6 +102,11 @@ PARAM (
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
+
+# Get script location
+$myPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+# Set the working directory to script location
+Set-Location -path $myPath
 
 # Newline characters to use in the logfile, based on OS (CR+LF on Windows, LF everywhere else)
 if ($Env:OS) {$nl = "`r`n"} else {$nl = "`n"}
