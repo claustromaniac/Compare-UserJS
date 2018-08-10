@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.15.2
-	Update Date: 2018-07-21
+	Version: 1.16.0
+	Update Date: 2018-08-10
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -381,9 +381,9 @@ Function Write-Report {
 
 # Load files into memory.
 Write-Host "Loading $fileNameA ..."
-$fileA = Get-Content -path $filepath_A | Out-String
+$fileA = [System.IO.File]::ReadAllText($filepath_A)
 Write-Host "Loading $fileNameB ..."
-$fileB = Get-Content -path $filepath_B | Out-String
+$fileB = [System.IO.File]::ReadAllText($filepath_B)
 
 # Remove carriage returns, if they exist. The source files aren't supposed to have them in the first place.
 $fileA = $fileA -creplace "\r", ''
@@ -405,7 +405,8 @@ if (!$noCommentsB) {
 Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
 
 Write-Host "Writing report to $outputFile ..."
-if ($append) { Write-Report | Out-File -filepath $outputFile -encoding "UTF8" -append -noclobber }
-else { Write-Report | Out-File -filepath $outputFile -encoding "UTF8" }
-$prompt = Read-Host 'All done. Would you like to open the logfile with the default editor? (y/n)'
+$outstream = New-Object System.IO.StreamWriter $outputFile, $append
+Try { ForEach ( $line in Write-Report ) { $outstream.WriteLine($line) } }
+Finally { $outstream.Close() }
+$prompt = Read-Host 'All done. Would you like to open the log file with the default editor? (y/n)'
 if ($prompt -eq 'y') {Invoke-Item -path $outputFile}
