@@ -7,6 +7,7 @@
 
 TITLE %~n0
 IF EXIST "%~n0.ps1" (
+	ECHO:Launching PowerShell...
 	PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%~dpn0.ps1' %*"
 ) ELSE ( ECHO: Script not found in the current directory. Aborting. )
 PAUSE
