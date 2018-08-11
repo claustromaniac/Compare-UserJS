@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.16.0
-	Update Date: 2018-08-10
+	Version: 1.16.1
+	Update Date: 2018-08-11
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -100,7 +100,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.16.0'
+$myVersion = 'v1.16.1'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -139,9 +139,9 @@ $mlc_mark = $false
 
 #----------------[ Functions ]---------------------------------------------------------
 
-Function JSCom {
+function JSCom {
 	# Return JS comment characters if inJS is set, NULL otherwise.
-	Param($multi = $false)
+	param($multi = $false)
 
 	if ($script:inJS) {
 		if ($multi) {
@@ -151,9 +151,9 @@ Function JSCom {
 	}
 }
 
-Function Get-UserJSPrefs {
+function Get-UserJSPrefs {
 	# Function for parsing pref declarations, extracting prefnames and values, populating the root hashtables.
-	Param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
+	param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
 	$fileStr = $fileStr -creplace "\n", ''
 
@@ -161,7 +161,7 @@ Function Get-UserJSPrefs {
 	$fileStr = $fileStr -creplace ("pref\s*\(\s*$rx_sc\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
 
 	# Read line by line
-	ForEach ($line in $fileStr.Split("`n")) {
+	forEach ($line in $fileStr.Split("`n")) {
 		$prefname = $line -creplace ".*pref\($rx_sc,.*\);.*", '$1$2'
 		if ($prefname -ceq $line) {continue}
 		$val = $line -creplace ".*pref\((?:$rx_s),(?:(true|false|-?[0-9]+)|(?:$rx_sc))\);.*", '$1$2$3'
@@ -172,9 +172,9 @@ Function Get-UserJSPrefs {
 	}
 }
 
-Function Read-SLCom {
+function Read-SLCom {
 	# Function for filtering prefs declared behind single-line JS comments (//...)
-	Param([hashtable]$prefs_ht, [string]$fileStr)
+	param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Get only lines with single-line comments
 	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
@@ -184,9 +184,9 @@ Function Read-SLCom {
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
 
-Function Read-MLCom {
+function Read-MLCom {
 	# Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
-	Param([hashtable]$prefs_ht, [string]$fileStr)
+	param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Make sure there are multi-line comments, return otherwise
 	if (!($fileStr -cmatch "(?s)/\*$rx_c.*\*/$rx_c")) { return }
@@ -202,9 +202,9 @@ Function Read-MLCom {
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
 
-Function Read-ActivePrefs {
+function Read-ActivePrefs {
 	# Function for filtering active prefs
-	Param([hashtable]$prefs_ht, [string]$fileStr, [bool]$comments = $true)
+	param([hashtable]$prefs_ht, [string]$fileStr, [bool]$comments = $true)
 
 	if ($comments) {
 		# Remove multi-line comments
@@ -216,9 +216,9 @@ Function Read-ActivePrefs {
 	Get-UserJSPrefs $prefs_ht $fileStr ''
 }
 
-Function Write-Report {
+function Write-Report {
 	# Function for comparing the hashtables and dumping the report data
-	Param()
+	param()
 
 	# Report chunks, to be formatted as multi-line strings (lists)
 	$matching_prefs = ''					# matching values
@@ -237,7 +237,7 @@ Function Write-Report {
 	$unique_prefs = $prefsA.keys + $prefsB.keys | Sort-Object | Get-Unique
 
 	# Get the length of the longest prefname, which will be used for padding the output.
-	ForEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) { $pn_pad = $prefname.length }}
+	forEach ($prefname in $unique_prefs) {if ($pn_pad -lt $prefname.length) { $pn_pad = $prefname.length }}
 
 	# Get the length of the longest filename, also for padding the output.
 	if ($script:fileNameA.length -ge $script:fileNameB.length) { $fn_pad = $script:fileNameA.length }
@@ -253,13 +253,13 @@ Function Write-Report {
 		$dlist_format = "{0, -7} {1, $(-($fn_pad+3))}  {2, 1}$nl"
 	}
 
-	"$(JSCom 1)::::::::::::::: { Compare-UserJS Report } ::::::::::::::: $myversion"
+	"$(JSCom 1)::::::::::::::: { Compare-UserJS Report } ::::::::::::::: $myversion$nl"
 	Get-Date
 	"$nl`Summary:"
 	$summary_format -f $prefsA.count, "unique prefs in $fileNameA"
 	$summary_format -f $prefsB.count, "unique prefs in $fileNameB$nl"
 
-	ForEach ($prefname in $unique_prefs) {
+	forEach ($prefname in $unique_prefs) {
 		if ($prefsA.$prefname) { $entriesA = $prefsA.$prefname } else { $entriesA = @() }
 		if ($prefsB.$prefname) { $entriesB = $prefsB.$prefname } else { $entriesB = @() }
 		$format_arA = @( $entriesA[-1].inactive, $prefname, [string]$entriesA[-1].value )
@@ -318,13 +318,13 @@ Function Write-Report {
 		}
 		if ($entriesA.count -gt 1) {
 			if ($dups_A_count++) { $dups_in_A += $nl }
-			ForEach ($entry in $entriesA) {
+			forEach ($entry in $entriesA) {
 				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
 		}
 		if ($entriesB.count -gt 1) {
 			if ($dups_B_count++) { $dups_in_B += $nl }
-			ForEach ($entry in $entriesB) {
+			forEach ($entry in $entriesB) {
 				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
 			}
 		}
@@ -406,7 +406,7 @@ Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
 
 Write-Host "Writing report to $outputFile ..."
 $outstream = New-Object System.IO.StreamWriter $outputFile, $append
-Try { ForEach ( $line in Write-Report ) { $outstream.WriteLine($line) } }
-Finally { $outstream.Close() }
+try { forEach ( $line in Write-Report ) { $outstream.WriteLine($line) } }
+finally { $outstream.Close() }
 $prompt = Read-Host 'All done. Would you like to open the log file with the default editor? (y/n)'
 if ($prompt -eq 'y') {Invoke-Item -path $outputFile}
