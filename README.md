@@ -1,11 +1,18 @@
-Compare-UserJS
-==============
+- [**Introduction**](https://github.com/claustromaniac/Compare-UserJS#introduction)
+- [**Requirements**](https://github.com/claustromaniac/Compare-UserJS#requirements)
+- [**Instructions**](https://github.com/claustromaniac/Compare-UserJS#instructions)
+- [**Parameters**](https://github.com/claustromaniac/Compare-UserJS#parameters)
+- [**Examples and tips**](https://github.com/claustromaniac/Compare-UserJS#examples-and-tips)
+- [**F.A.Q.**](https://github.com/claustromaniac/Compare-UserJS#faq-assuming-it-counts-when-im-the-one-asking)
+- [**Acknowledgements**](https://github.com/claustromaniac/Compare-UserJS#acknowledgements)
+<br><br><br>
 
-No idea what *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).<br> *Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
+Introduction
+------------
 
-This script requires only [PowerShell](https://github.com/PowerShell/PowerShell) v2+, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems.
+No idea what a *user.js* is? Read [this article](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).<br> *Note: For enhanced privacy and security I use (and recommend) the [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js).*
 
-Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing JavaScript half-assedly, and by default logs the results to *userJS_diff.log*.
+Compare-UserJS uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing *user.js* files, and by default logs the results to *userJS_diff.log*.
 
 Things detected (and reported) by this script:
 
@@ -18,36 +25,35 @@ Things detected (and reported) by this script:
 - duplicates in each of the two source files.
 
 Additionally, it can catch one type of syntax error (for now), and includes that information in the report.
+
+You can see an example of what the output looks like [here](userJS_diff.log).
 <br><br>
 
+Requirements
+------------
 
-Usage
-------
+PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems. You can download the latest version from the official [PowerShell repository](https://github.com/PowerShell/PowerShell).
+<br><br>
 
-Simply save this script wherever you want, launch the PowerShell CLI, [CD to the path of the script](https://ss64.com/ps/set-location.html), and run it, as in:
+Instructions
+------------
 
-```PowerShell
-CD C:\path\to\the\script
-.\Compare-UserJS
-```
+The easiest way to use this tool:
+1. Download both [*Compare-UserJS.bat*](https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.bat) and [*Compare-UserJS.ps1*](https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.ps1).
+2. Place them in the same folder.
+3. Drag and drop the two files that you want to compare on the *Compare-UserJS.bat*, simultaneously.
 
-If you're a PowerShell virgin and you still don't have a clue what I am talking about, don't freak out (been there, done that) and just keep reading. There is an alternative below. If you're the reader type, [read this](https://ss64.com/ps/syntax-run.html) (or just search teh interwebz).
+The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you can't or don't want to use said batchfile, you will have to either relax the [execution policy](https://ss64.com/ps/set-executionpolicy.html) before starting, or manually create a new blank ps1 file and copy the text of this PowerShell script in it. In fact, you may even have to do both, depending on your system's configuration.
 
-The script will prompt you to enter the paths of the two user.js files to compare. Keep in mind that the actual names of the files don't matter, I only refer to them as *user.js* because that's what their names have to be when... OMG am I really explaining this?
+Compare-UserJS requires two parameters: the paths of the two files to be compared. You can pass them directly from the console/terminal, but it's not necessary because the script will prompt you to enter them during execution if you don't.
 
 See the embedded help info with:
-
 ```PowerShell
 Get-Help .\Compare-UserJS -full
 ```
 
 Or just read it from the file, but that's less thrilling.
-
-If you don't want to type that much (and you're on Windows), you can alternatively run the batch script *Compare-UserJS.bat* from the same folder as the PS script. It works as a launcher that bypasses the PS execution policy. Saves you opening the CLI, CD'ing and typing in the command, but Compare-UserJS will still have you type in the paths of the two *user.js* files unless you drag-and-drop them on the BAT directly. Compare-UserJS will still NOT make you coffee, though.
-
-You can see an example of what the output looks like [here](userJS_diff.log).
 <br><br>
-
 
 Parameters
 -----------
@@ -70,6 +76,30 @@ Parameters
   4 - It will be written to userJS_diff.js unless the -outputFile parameter is also specified.
 </em></sub><br><br>
 
+
+Examples and tips
+-----------------
+
+Compare fileA to fileB:
+```PowerShell
+.\Compare-UserJS.ps1 "C:\absolute\path\to\fileA" "..\relative\path\to\fileB"
+```
+
+Compare fileA to fileB, and save the report to report.txt, appending to the end of the file:
+```PowerShell
+.\Compare-UserJS.ps1 "fileA" "fileB" -outputFile "report.txt" -append
+```
+
+You can use this tool to assist you in making a manual clean up of your *prefs.js* too!
+```PowerShell
+.\Compare-UserJS.ps1 prefs.js user.js -hideMask 506 -inJS
+```
+
+Passing any parameters to the BAT is the same, except that you don't need the `.\`
+```batchfile
+Compare-UserJS.bat "fileA" "fileB"
+```
+<br>
 
 F.A.Q. <sub><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sub>
 -------
