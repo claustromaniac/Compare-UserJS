@@ -90,7 +90,7 @@ Compare fileA to fileB, and save the report to report.txt, appending to the end 
 .\Compare-UserJS.ps1 "fileA" "fileB" -outputFile "report.txt" -append
 ```
 
-You can use this tool to assist you in making a manual clean up of your *prefs.js* too!
+You can use this tool to more easily make a manual cleanup of your *prefs.js* too!
 ```PowerShell
 .\Compare-UserJS.ps1 prefs.js user.js -hideMask 506 -inJS
 ```
