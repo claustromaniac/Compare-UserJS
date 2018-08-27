@@ -36,10 +36,10 @@
 	0 - hide nothing (default)
 	1 - hide list of prefs with matching values and matching state (active/inactive)
 	2 - hide list of prefs with different values
-	4 - hide list of prefs declared in A but not in B
-	8 - hide list of prefs declared in B but not in A
-	16 - hide list of matching prefs active in A but inactive in B
-	32 - hide list of matching prefs active in B but inactive in A
+	4 - hide list of prefs declared in B but not in A
+	8 - hide list of prefs declared in A but not in B
+	16 - hide list of matching prefs active in B but inactive in A
+	32 - hide list of matching prefs active in A but inactive in B
 	64 - hide list of prefs that have both mismatching values and states
 	128 - hide potential syntax errors
 	256 - hide lists of duplicate entries
@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.16.1
-	Update Date: 2018-08-11
+	Version: 1.16.2
+	Update Date: 2018-08-26
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -100,7 +100,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.16.1'
+$myVersion = 'v1.16.2'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
