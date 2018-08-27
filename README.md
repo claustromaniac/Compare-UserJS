@@ -92,7 +92,7 @@ Compare fileA to fileB, and save the report to report.txt, appending to the end 
 
 You can use this tool to more easily make a manual cleanup of your *prefs.js* too!
 ```PowerShell
-.\Compare-UserJS.ps1 prefs.js user.js -hideMask 506 -inJS
+.\Compare-UserJS.ps1 prefs.js user.js -hideMask 502 -inJS
 ```
 
 Passing any parameters to the BAT is the same, except that you don't need the `.\`
