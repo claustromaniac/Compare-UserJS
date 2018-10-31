@@ -1,7 +1,9 @@
  Compare-UserJS
 ================
 
-Table of contents
+<br>
+
+Index
 :------------------
 [:fast_forward: **Requirements**][2]
 [:fast_forward: **Instructions**][3]
@@ -10,8 +12,8 @@ Table of contents
 [:fast_forward: **Acknowledgements**][6]
 [:fast_forward: **Glossary**][7]
 [:fast_forward: **F.A.Q.**][8]
-<br><br>
 
+<br>
 
 This script uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing *user.js* files, and by default logs the results to *userJS_diff.log*.
 
