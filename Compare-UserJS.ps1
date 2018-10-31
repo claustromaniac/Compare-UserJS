@@ -49,7 +49,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.17.1
+	Version: 1.17.2
 	Update Date: 2018-10-31
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.17.1'
+$myVersion = 'v1.17.2'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -381,37 +381,37 @@ function Write-Report {
 
 	$sep = "$(JSCom)------------------------------------------------------------------------------$nl$(JSCom)"
 	if ($matching_prefs.count -and !($script:hideMask -band 1)) {
-		"$sep The following $([string]$matching_prefs.count) prefs match in both values and states:$nl$nl$($matching_prefs -join ""`n"")$nl"
+		"$sep The following $([string]$matching_prefs.count) prefs match in both values and states:$nl$nl$($matching_prefs -join $nl)$nl"
 	}
 	if ($differences.count -and !($script:hideMask -band 2)) {
-		"$sep The following $([string]$differences.count) prefs have different values, but matching states:$nl$nl$($differences -join ""`n"")$nl"
+		"$sep The following $([string]$differences.count) prefs have different values, but matching states:$nl$nl$($differences -join $nl)$nl"
 	}
 	if ($missing_in_A.count -and !($script:hideMask -band 4)) {
-		"$sep The following $([string]$missing_in_A.count) prefs are not declared in $fileNameA`:$nl$nl$($missing_in_A -join ""`n"")$nl"
+		"$sep The following $([string]$missing_in_A.count) prefs are not declared in $fileNameA`:$nl$nl$($missing_in_A -join $nl)$nl"
 	}
 	if ($missing_in_B.count -and !($script:hideMask -band 8)) {
-		"$sep The following $([string]$missing_in_B.count) prefs are not declared in $fileNameB`:$nl$nl$($missing_in_B -join ""`n"")$nl"
+		"$sep The following $([string]$missing_in_B.count) prefs are not declared in $fileNameB`:$nl$nl$($missing_in_B -join $nl)$nl"
 	}
 	if ($inactive_in_A.count -and !($script:hideMask -band 16)) {
-		"$sep The following $([string]$inactive_in_A.count) prefs match but are inactive in $fileNameA`:$nl$nl$($inactive_in_A -join ""`n"")$nl"
+		"$sep The following $([string]$inactive_in_A.count) prefs match but are inactive in $fileNameA`:$nl$nl$($inactive_in_A -join $nl)$nl"
 	}
 	if ($inactive_in_B.count -and !($script:hideMask -band 32)) {
-		"$sep The following $([string]$inactive_in_B.count) prefs match but are inactive in $fileNameB`:$nl$nl$($inactive_in_B -join ""`n"")$nl"
+		"$sep The following $([string]$inactive_in_B.count) prefs match but are inactive in $fileNameB`:$nl$nl$($inactive_in_B -join $nl)$nl"
 	}
 	if ($fully_mismatching.count -and !($script:hideMask -band 64)) {
-		"$sep The following $([string]$fully_mismatching.count) prefs have both mismatching values and states:$nl$nl$($fully_mismatching -join ""`n"")$nl"
+		"$sep The following $([string]$fully_mismatching.count) prefs have both mismatching values and states:$nl$nl$($fully_mismatching -join $nl)$nl"
 	}
 	if ($bad_syntax_A.count -and !($script:hideMask -band 128)) {
-		"$sep $([string]$bad_syntax_A.count) possible syntax errors detected in $fileNameA`:$nl$nl$($bad_syntax_A -join ""`n"")$nl"
+		"$sep $([string]$bad_syntax_A.count) possible syntax errors detected in $fileNameA`:$nl$nl$($bad_syntax_A -join $nl)$nl"
 	}
 	if ($bad_syntax_B.count -and !($script:hideMask -band 128)) {
-		"$sep $([string]$bad_syntax_B.count) possible syntax errors detected in $fileNameB`:$nl$nl$($bad_syntax_B -join ""`n"")$nl"
+		"$sep $([string]$bad_syntax_B.count) possible syntax errors detected in $fileNameB`:$nl$nl$($bad_syntax_B -join $nl)$nl"
 	}
 	if ($dups_A_count -and !($script:hideMask -band 256)) {
-		"$sep The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$($dups_in_A -join ""`n"")$nl"
+		"$sep The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$($dups_in_A -join $nl)$nl"
 	}
 	if ($dups_B_count -and !($script:hideMask -band 256)) {
-		"$sep The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$($dups_in_B -join ""`n"")$nl"
+		"$sep The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$($dups_in_B -join $nl)$nl"
 	}
 }
 
