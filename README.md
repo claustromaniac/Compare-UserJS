@@ -3,15 +3,15 @@
 
 <br>
 
-Index
-:------------------
-[:fast_forward: **Requirements**][2]
-[:fast_forward: **Instructions**][3]
-[:fast_forward: **Parameters**][4]
-[:fast_forward: **Examples and tips**][5]
-[:fast_forward: **Acknowledgements**][6]
-[:fast_forward: **Glossary**][7]
-[:fast_forward: **F.A.Q.**][8]
+:bookmark_tabs: Index
+:---------------------
+[Requirements][2]
+[Instructions][3]
+[Parameters][4]
+[Examples and tips][5]
+[Acknowledgements][6]
+[Glossary][7]
+[F.A.Q.][8]
 
 <br>
 
@@ -114,7 +114,7 @@ Comparing fileA to fileB:
 .\Compare-UserJS.ps1 "C:\absolute\path\to\fileA" "..\relative\path\to\fileB"
 ```
 
-Comparing fileA to fileB, and saving the report to *report.txt*, appending to the end of the file:
+Comparing *fileA.js* to *fileB.js*, and saving the report to *report.txt*, appending to the end of the file:
 ```PowerShell
 .\Compare-UserJS.ps1 "fileA.js" "fileB.js" -outputFile "report.txt" -append
 ```
@@ -139,7 +139,7 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
  Glossary
 -----------
-- state (active/inactive): Whether a pref was declared within the context of a JavaScript comment or not.
+- state: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
 - user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I strongly encourage you to check out the [ghacks user.js][g-u.js] if you haven't already.
 
 
