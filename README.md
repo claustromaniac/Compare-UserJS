@@ -1,3 +1,6 @@
+ Compare-UserJS
+================
+
 Table of contents
 :------------------
 [:fast_forward: **Requirements**][2]
@@ -9,9 +12,6 @@ Table of contents
 [:fast_forward: **F.A.Q.**][8]
 <br><br>
 
-
- Compare-UserJS
-================
 
 This script uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing *user.js* files, and by default logs the results to *userJS_diff.log*.
 
@@ -34,8 +34,6 @@ You can see an example of what the output looks like [here](userJS_diff.log).
 ---------------
 
 PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems. You can download the latest version from the official [PowerShell repository][ps].
-
-[:top:][1]
 
 
  Instructions
@@ -153,7 +151,7 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 [:top:][1]
 
 
-[1]: https://github.com/claustromaniac/Compare-UserJS#introduction
+[1]: https://github.com/claustromaniac/Compare-UserJS#Compare-UserJS
 [2]: https://github.com/claustromaniac/Compare-UserJS#requirements
 [3]: https://github.com/claustromaniac/Compare-UserJS#instructions
 [4]: https://github.com/claustromaniac/Compare-UserJS#parameters
