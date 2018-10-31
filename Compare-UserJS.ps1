@@ -1,15 +1,16 @@
 <#
 .SYNOPSIS
-	Compares two user.js files (for Firefox profiles) and returns all of the differences found between them.
+	Compares two user.js files and outputs to a file all of the differences found between them.
 
 .DESCRIPTION
-	Compare-UserJS parses JS files rudimentarily, in search for the specific set of valid expressions used to define preference values in user.js. Said expressions are the following three JavaScript function calls:
+	Compare-UserJS parses Firefox configuration files rudimentarily, in search for the specific set of valid expressions used to define preference values.
 
 	pref("prefname", value);
-	user_pref("prefname", value);
+	lockPref("prefname", value);
 	sticky_pref("prefname", value);
+	user_pref("prefname", value);
 
-	In spite of the fact that it does this natively, Compare-UserJS is still capable of interpreting those three expressions in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
+	In spite of the fact that it does this natively, Compare-UserJS is still capable of interpreting those expressions in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
 
 	Compare-UserJS can also detect a particular type of syntax error. Specifically, it performs rudimentary (crappy) type-checking on the value parameter of the aforementioned JS function calls. Whenever it seems that the value is neither a string, nor an integer, nor a boolean, Compare-UserJS will include this information in the report.
 
@@ -48,8 +49,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.17.0
-	Update Date: 2018-10-30
+	Version: 1.17.1
+	Update Date: 2018-10-31
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -100,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.17.0'
+$myVersion = 'v1.17.1'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -122,11 +123,13 @@ $fileNameB = (Split-Path -path $filepath_B -leaf)
 
 if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepath_B }
 
-# Regular expression for detecting JS comments. Meant to be used as a suffix.
+# Regex for matching pref, user_pref, sticky_pref or lockPref
+$rx_p = '[pP]ref(?<=user_pref|\Wpref|sticky_pref|lockPref)'
+# Regex for detecting JS comments. Meant to be used as a suffix.
 $rx_c = "(?!(?:(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*""|(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')\s*\)\s*;)"
-# Regular expression for matching prefname or value string. Must be used within groups.
+# Regex for matching prefname or value string. Must be used within groups.
 $rx_s = "(?:""(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*"")|(?:'(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')"
-# Regular expression for capturing prefname or value string. Includes two capturing groups.
+# Regex for capturing prefname or value string. Includes two capturing groups.
 $rx_sc = "(?:(?:""((?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*)"")|(?:'((?:[^']|(?<=[^\\]\\(?:\\\\)*)')*)'))"
 
 if ($inJS) {
@@ -152,23 +155,27 @@ function JSCom {
 }
 
 function Get-UserJSPrefs {
-	# Function for parsing pref declarations, extracting prefnames and values, populating the root hashtables.
+	# Function for deserializing pref-value declarations and populating the root hash tables.
 	param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
+	# Isolate and sanitize the target expressions
+	$fileStr = " $fileStr"
 	$fileStr = $fileStr -creplace "\n", ''
+	$fileStr = $fileStr -creplace ".*?$rx_p\s*\(\s*($rx_s)\s*,\s*(.+?)\s*\)\s*;", "`$1`n`$2`n"
+	$fileStr = $fileStr -creplace '(?s)(.*\n).*', '$1'
 
-	# Remove unnecessary spaces from the target JS expressions. Also, let's split lines at semicolons.
-	$fileStr = $fileStr -creplace ("pref\s*\(\s*$rx_sc\s*,\s*(.+?)\s*\)\s*;"), "pref(""`$1`$2"",`$3);`n"
-
-	# Read line by line
+	$pn = $false
 	forEach ($line in $fileStr.Split("`n")) {
-		$prefname = $line -creplace ".*pref\($rx_sc,.*\);.*", '$1$2'
-		if ($prefname -ceq $line) {continue}
-		$val = $line -creplace ".*pref\((?:$rx_s),(?:(true|false|-?[0-9]+)|(?:$rx_sc))\);.*", '$1$2$3'
-		$broken = $val -ceq $line
-		if ($broken) { $val = $line -creplace ".*pref\((?:$rx_s),(.*?)\);.*", '$1' }
-		elseif (!($val -cmatch "^(?:true|false|-?[0-9]+)$")) { $val = """$val""" }
-		[hashtable[]] $prefs_ht.$prefname += @{ inactive=$inactive_flag; broken=$broken; value=$val }
+		if ($pn) {
+			[hashtable[]] $prefs_ht.$pn += @{
+				inactive=$inactive_flag;
+				broken=!($line -cmatch "(?:true|false|-?[0-9]+)|$rx_s");
+				value=$line
+			}
+			$pn = $false
+		} else {
+			$pn = $line -creplace "^[""'](.*)[""']$", '$1'
+		}
 	}
 }
 
@@ -177,7 +184,7 @@ function Read-SLCom {
 	param([hashtable]$prefs_ht, [string]$fileStr)
 
 	# Get only lines with single-line comments
-	$fileStr = $fileStr -creplace "(?m)^(?!.*//.*pref\s*\(.*,.*\)\s*;).*\n", ''
+	$fileStr = $fileStr -creplace "(?m)^(?!.*//$rx_c).*\n", ''
 	# Trim everything up to //
 	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", ''
 
@@ -269,9 +276,9 @@ function Write-Report {
 			if ($entriesA[-1].inactive -ne $entriesB[-1].inactive) {
 				if ($entriesA[-1].value -ceq $entriesB[-1].value) {
 					if ($entriesA[-1].inactive) {
-						[void] $inactive_in_A.Add(($list_format -f $format_arB))
+						[void] $inactive_in_A.Add($list_format -f $format_arB)
 					} else {
-						[void] $inactive_in_B.Add(($list_format -f $format_arA))
+						[void] $inactive_in_B.Add($list_format -f $format_arA)
 					}
 				} else {
 					if ($script:inJS) {
@@ -288,7 +295,7 @@ function Write-Report {
 					}
 				}
 			} elseif ($entriesA[-1].value -ceq $entriesB[-1].value) {
-				[void] $matching_prefs.Add(($list_format -f $format_arA))
+				[void] $matching_prefs.Add($list_format -f $format_arA)
 			} else {
 				if ($script:inJS) {
 					[void] $differences.Add((
@@ -304,15 +311,15 @@ function Write-Report {
 				}
 			}
 		} elseif ($entriesA) {
-			[void] $missing_in_B.Add(($list_format -f $format_arA))
+			[void] $missing_in_B.Add($list_format -f $format_arA)
 		} else {
-			[void] $missing_in_A.Add(($list_format -f $format_arB))
+			[void] $missing_in_A.Add($list_format -f $format_arB)
 		}
 		if ($entriesA[-1].broken) {
-			[void] $bad_syntax_A.Add(($list_format -f $format_arA))
+			[void] $bad_syntax_A.Add($list_format -f $format_arA)
 		}
 		if ($entriesB[-1].broken) {
-			[void] $bad_syntax_B.Add(($list_format -f $format_arB))
+			[void] $bad_syntax_B.Add($list_format -f $format_arB)
 		}
 		if ($entriesA.count -gt 1) {
 			if ($dups_A_count++) { $dups_in_A.Add('') }
@@ -435,7 +442,7 @@ if (!$noCommentsB) {
 } else { Write-Host 'Comments in this file will not be parsed as such.' }
 Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
 
-Write-Host "Writing report to $outputFile ..."
+Write-Host "Generating and writing report to $outputFile ...`nDon't close the console/terminal!"
 $outstream = New-Object System.IO.StreamWriter $outputFile, $append
 try { forEach ( $line in Write-Report ) { $outstream.WriteLine($line) } }
 finally { $outstream.Close() }
