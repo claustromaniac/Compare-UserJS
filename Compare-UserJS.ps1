@@ -48,8 +48,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.16.2
-	Update Date: 2018-08-26
+	Version: 1.17.0
+	Update Date: 2018-10-30
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -100,7 +100,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.16.2'
+$myVersion = 'v1.17.0'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -220,18 +220,19 @@ function Write-Report {
 	# Function for comparing the hashtables and dumping the report data
 	param()
 
-	# Report chunks, to be formatted as multi-line strings (lists)
-	$matching_prefs = ''					# matching values
-	$differences = ''						# different values
-	$missing_in_A = $missing_in_B = ''		# not declared
-	$inactive_in_A = $inactive_in_B = ''	# matching value but mismatching state
-	$fully_mismatching = ''					# mismatching states and values
-	$bad_syntax_A = $bad_syntax_B = ''		# possible syntax errors
-	$dups_in_A = $dups_in_B = ''			# duplicates
-
-	# Vars for counting the results in each given list
-	$matches_count = $diffs_count = $missing_A_count = $missing_B_count = $inactive_A_count = $inactive_B_count = 0
-	$fm_count = $errors_A_count = $errors_B_count = $dups_A_count = $dups_B_count = $dups_A_count = $dups_B_count = 0
+	# Report chunks
+	$matching_prefs = New-Object Collections.Generic.Hashset[string]                   # matching values
+	$differences = New-Object Collections.Generic.Hashset[string]                      # different values
+	$missing_in_A = New-Object Collections.Generic.Hashset[string]                     # not declared
+	$missing_in_B = New-Object Collections.Generic.Hashset[string]
+	$inactive_in_A = New-Object Collections.Generic.Hashset[string]                    # matching value but mismatching state
+	$inactive_in_B = New-Object Collections.Generic.Hashset[string]
+	$fully_mismatching = New-Object Collections.Generic.Hashset[string]                # mismatching states and values
+	$bad_syntax_A = New-Object Collections.ArrayList                                   # possible syntax errors
+	$bad_syntax_B = New-Object Collections.ArrayList
+	$dups_in_A = New-Object Collections.ArrayList                                      # duplicates
+	$dups_in_B = New-Object Collections.ArrayList
+	$dups_A_count = $dups_B_count = 0
 
 	# Get list of unique prefs sorted alphabetically
 	$unique_prefs = $prefsA.keys + $prefsB.keys | Sort-Object | Get-Unique
@@ -246,10 +247,10 @@ function Write-Report {
 	# Format for padding
 	$summary_format = '{0, 5} {1, -1}'
 	if ($script:inJS) {
-		$list_format = "{0, -3} pref(""{1, -1}"", {2, -1});$nl"
+		$list_format = "{0, -3} pref(""{1, -1}"", {2, -1});"
 		$dlist_format = "/* {0, $(-$fn_pad)} */ {1, -3} pref(""{2, -1}"", {3, -1});$nl"
 	} else {
-		$list_format = "{0, -3} {1, $(-$pn_pad)}  {2, 1}$nl"
+		$list_format = "{0, -3} {1, $(-$pn_pad)}  {2, 1}"
 		$dlist_format = "{0, -7} {1, $(-($fn_pad+3))}  {2, 1}$nl"
 	}
 
@@ -268,113 +269,143 @@ function Write-Report {
 			if ($entriesA[-1].inactive -ne $entriesB[-1].inactive) {
 				if ($entriesA[-1].value -ceq $entriesB[-1].value) {
 					if ($entriesA[-1].inactive) {
-						$inactive_A_count++
-						$inactive_in_A += $list_format -f $format_arB
+						[void] $inactive_in_A.Add(($list_format -f $format_arB))
 					} else {
-						$inactive_B_count++
-						$inactive_in_B += $list_format -f $format_arA
+						[void] $inactive_in_B.Add(($list_format -f $format_arA))
 					}
 				} else {
-					$fm_count++
 					if ($script:inJS) {
-						$fully_mismatching += $nl +
+						[void] $fully_mismatching.Add(
 							($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
 							($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
+						)
 					} else {
-						$fully_mismatching += "    $prefname$nl" +
+						[void] $fully_mismatching.Add(
+							"    $prefname$nl" +
 							($dlist_format -f $entriesA[-1].inactive, $fileNameA, $entriesA[-1].value) +
 							($dlist_format -f $entriesB[-1].inactive, $fileNameB, $entriesB[-1].value)
+						)
 					}
 				}
 			} elseif ($entriesA[-1].value -ceq $entriesB[-1].value) {
-				$matches_count++
-				$matching_prefs += $list_format -f $format_arA
+				[void] $matching_prefs.Add(($list_format -f $format_arA))
 			} else {
-				$diffs_count++
 				if ($script:inJS) {
-					$differences += $nl +
+					[void] $differences.Add((
 						($dlist_format -f $fileNameA, $entriesA[-1].inactive, $prefname, $entriesA[-1].value) +
 						($dlist_format -f $fileNameB, $entriesB[-1].inactive, $prefname, $entriesB[-1].value)
+					))
 				} else {
-					$differences += ("{0, -3} {1, -1}$nl" -f $entriesA[-1].inactive, $prefname) +
+					[void] $differences.Add((
+						("{0, -3} {1, -1}$nl" -f $entriesA[-1].inactive, $prefname) +
 						($dlist_format -f '', $fileNameA, $entriesA[-1].value) +
 						($dlist_format -f '', $fileNameB, $entriesB[-1].value)
+					))
 				}
 			}
 		} elseif ($entriesA) {
-			$missing_B_count++
-			$missing_in_B += $list_format -f $format_arA
+			[void] $missing_in_B.Add(($list_format -f $format_arA))
 		} else {
-			$missing_A_count++
-			$missing_in_A += $list_format -f $format_arB
+			[void] $missing_in_A.Add(($list_format -f $format_arB))
 		}
 		if ($entriesA[-1].broken) {
-			$errors_A_count++
-			$bad_syntax_A += $list_format -f $format_arA
+			[void] $bad_syntax_A.Add(($list_format -f $format_arA))
 		}
 		if ($entriesB[-1].broken) {
-			$errors_B_count++
-			$bad_syntax_B += $list_format -f $format_arB
+			[void] $bad_syntax_B.Add(($list_format -f $format_arB))
 		}
 		if ($entriesA.count -gt 1) {
-			if ($dups_A_count++) { $dups_in_A += $nl }
+			if ($dups_A_count++) { $dups_in_A.Add('') }
 			forEach ($entry in $entriesA) {
-				$dups_in_A += $list_format -f $entry.inactive, $prefname, [string]$entry.value
+				[void] $dups_in_A.Add(($list_format -f $entry.inactive, $prefname, [string]$entry.value))
 			}
 		}
 		if ($entriesB.count -gt 1) {
-			if ($dups_B_count++) { $dups_in_B += $nl }
+			if ($dups_B_count++) { $dups_in_B.Add('') }
 			forEach ($entry in $entriesB) {
-				$dups_in_B += $list_format -f $entry.inactive, $prefname, [string]$entry.value
+				[void] $dups_in_B.Add(($list_format -f $entry.inactive, $prefname, [string]$entry.value))
 			}
 		}
 	}
 
-	if ($matches_count) { $summary_format -f $matches_count, 'matching prefs, both value and state (active/inactive)' }
-	if ($diffs_count) {	$summary_format -f $diffs_count, 'prefs with different values but matching state' }
-	if ($missing_A_count) { $summary_format -f $missing_A_count, "prefs not declared in $fileNameA" }
-	if ($missing_B_count) { $summary_format -f $missing_B_count, "prefs not declared in $fileNameB" }
-	if ($inactive_A_count) { $summary_format -f $inactive_A_count, "prefs with matching values but inactive in $fileNameA" }
-	if ($inactive_B_count) { $summary_format -f $inactive_B_count, "prefs with matching values but inactive in $fileNameB" }
-	if ($fm_count) { $summary_format -f $fm_count, 'prefs with both mismatching values and states' }
+	if ($matching_prefs.count) {
+		$summary_format -f $matching_prefs.count, 'matching prefs, both value and state (active/inactive)'
+	}
+	if ($differences.count) {
+		$summary_format -f $differences.count, 'prefs with different values but matching state'
+	}
+	if ($missing_in_A.count) {
+		$summary_format -f $missing_in_A.count, "prefs not declared in $fileNameA"
+	}
+	if ($missing_in_B.count) {
+		$summary_format -f $missing_in_B.count, "prefs not declared in $fileNameB"
+	}
+	if ($inactive_in_A.count) {
+		$summary_format -f $inactive_in_A.count, "prefs with matching values but inactive in $fileNameA"
+	}
+	if ($inactive_in_B.count) {
+		$summary_format -f $inactive_in_B.count, "prefs with matching values but inactive in $fileNameB"
+	}
+	if ($fully_mismatching.count) {
+		$summary_format -f $fully_mismatching.count, 'prefs with both mismatching values and states'
+	}
 	' ----'
 	$summary_format -f $unique_prefs.count, 'combined unique prefs'
 
-	if ($errors_A_count -or $errors_B_count) {"$nl  Warning:$nl" }
-	if ($errors_A_count) { $summary_format -f $errors_A_count, "prefs in $fileNameA seem to have broken values"}
-	if ($errors_B_count) { $summary_format -f $errors_B_count, "prefs in $fileNameB seem to have broken values"}
+	if ($bad_syntax_A.count -or $bad_syntax_B.count) {"$nl  Warning:$nl" }
+	if ($bad_syntax_A.count) {
+		$summary_format -f $bad_syntax_A.count, "prefs in $fileNameA seem to have broken values"
+	}
+	if ($bad_syntax_B.count) {
+		$summary_format -f $bad_syntax_B.count, "prefs in $fileNameB seem to have broken values"
+	}
 	if ($dups_A_count -or $dups_B_count) {
 		''
-		if ($dups_A_count) { $summary_format -f $dups_A_count, "duplicated prefs in $fileNameA"	}
-		if ($dups_B_count) { $summary_format -f $dups_B_count, "duplicated prefs in $fileNameB"	}
+		if ($dups_A_count) {
+			$summary_format -f $dups_A_count, "duplicated prefs in $fileNameA"
+		}
+		if ($dups_B_count) {
+			$summary_format -f $dups_B_count, "duplicated prefs in $fileNameB"
+		}
 	}
 
 	if (!$script:inJS) { "$nl Reference:  [i] inactive pref (commented-out)$nl" }
 	JSCom 1
 
 	$sep = "$(JSCom)------------------------------------------------------------------------------$nl$(JSCom)"
-	if ($matching_prefs -and !($script:hideMask -band 1)) {
-		"$sep The following $matches_count prefs match in both values and states:$nl$nl$matching_prefs$nl" }
-	if ($differences -and !($script:hideMask -band 2)) {
-		"$sep The following $diffs_count prefs have different values, but matching states:$nl$nl$differences$nl" }
-	if ($missing_in_A -and !($script:hideMask -band 4)) {
-		"$sep The following $missing_A_count prefs are not declared in $fileNameA`:$nl$nl$missing_in_A$nl" }
-	if ($missing_in_B -and !($script:hideMask -band 8)) {
-		"$sep The following $missing_B_count prefs are not declared in $fileNameB`:$nl$nl$missing_in_B$nl" }
-	if ($inactive_in_A -and !($script:hideMask -band 16)) {
-		"$sep The following $inactive_A_count prefs match but are inactive in $fileNameA`:$nl$nl$inactive_in_A$nl" }
-	if ($inactive_in_B -and !($script:hideMask -band 32)) {
-		"$sep The following $inactive_B_count prefs match but are inactive in $fileNameB`:$nl$nl$inactive_in_B$nl" }
-	if ($fully_mismatching -and !($script:hideMask -band 64)) {
-		"$sep The following $fm_count prefs have both mismatching values and states:$nl$nl$fully_mismatching$nl" }
-	if ($bad_syntax_A -and !($script:hideMask -band 128)) {
-		"$sep $errors_A_count possible syntax errors detected in $fileNameA`:$nl$nl$bad_syntax_A$nl" }
-	if ($bad_syntax_B -and !($script:hideMask -band 128)) {
-		"$sep $errors_B_count possible syntax errors detected in $fileNameB`:$nl$nl$bad_syntax_B$nl" }
+	if ($matching_prefs.count -and !($script:hideMask -band 1)) {
+		"$sep The following $([string]$matching_prefs.count) prefs match in both values and states:$nl$nl$($matching_prefs -join ""`n"")$nl"
+	}
+	if ($differences.count -and !($script:hideMask -band 2)) {
+		"$sep The following $([string]$differences.count) prefs have different values, but matching states:$nl$nl$($differences -join ""`n"")$nl"
+	}
+	if ($missing_in_A.count -and !($script:hideMask -band 4)) {
+		"$sep The following $([string]$missing_in_A.count) prefs are not declared in $fileNameA`:$nl$nl$($missing_in_A -join ""`n"")$nl"
+	}
+	if ($missing_in_B.count -and !($script:hideMask -band 8)) {
+		"$sep The following $([string]$missing_in_B.count) prefs are not declared in $fileNameB`:$nl$nl$($missing_in_B -join ""`n"")$nl"
+	}
+	if ($inactive_in_A.count -and !($script:hideMask -band 16)) {
+		"$sep The following $([string]$inactive_in_A.count) prefs match but are inactive in $fileNameA`:$nl$nl$($inactive_in_A -join ""`n"")$nl"
+	}
+	if ($inactive_in_B.count -and !($script:hideMask -band 32)) {
+		"$sep The following $([string]$inactive_in_B.count) prefs match but are inactive in $fileNameB`:$nl$nl$($inactive_in_B -join ""`n"")$nl"
+	}
+	if ($fully_mismatching.count -and !($script:hideMask -band 64)) {
+		"$sep The following $([string]$fully_mismatching.count) prefs have both mismatching values and states:$nl$nl$($fully_mismatching -join ""`n"")$nl"
+	}
+	if ($bad_syntax_A.count -and !($script:hideMask -band 128)) {
+		"$sep $([string]$bad_syntax_A.count) possible syntax errors detected in $fileNameA`:$nl$nl$($bad_syntax_A -join ""`n"")$nl"
+	}
+	if ($bad_syntax_B.count -and !($script:hideMask -band 128)) {
+		"$sep $([string]$bad_syntax_B.count) possible syntax errors detected in $fileNameB`:$nl$nl$($bad_syntax_B -join ""`n"")$nl"
+	}
 	if ($dups_A_count -and !($script:hideMask -band 256)) {
-		"$sep The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$dups_in_A$nl" }
+		"$sep The following $dups_A_count prefs have duplicate entries in $fileNameA`:$nl$nl$($dups_in_A -join ""`n"")$nl"
+	}
 	if ($dups_B_count -and !($script:hideMask -band 256)) {
-		"$sep The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$dups_in_B$nl" }
+		"$sep The following $dups_B_count prefs have duplicate entries in $fileNameB`:$nl$nl$($dups_in_B -join ""`n"")$nl"
+	}
 }
 
 #----------------[ Main Execution ]----------------------------------------------------
