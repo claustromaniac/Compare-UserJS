@@ -153,7 +153,7 @@ function JSCom {
 }
 
 function Get-UserJSPrefs {
-	# Function for deserializing pref-value declarations and populating the root hash tables.
+	# Function for deserializing the input.
 	param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
 	# Isolate and sanitize the target expressions
