@@ -126,11 +126,9 @@ if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepat
 # Regex for matching pref, user_pref, sticky_pref or lockPref
 $rx_p = '[pP]ref(?<=user_pref|\Wpref|sticky_pref|lockPref)'
 # Regex for detecting JS comments. Meant to be used as a suffix.
-$rx_c = "(?!(?:(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*""|(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')\s*\)\s*;)"
+$rx_c = '(?!(?:(?:[^"]|(?<=[^\\]\\(?:\\\\)*)")*"|(?:[^'']|(?<=[^\\]\\(?:\\\\)*)'')*'')\s*\)\s*;)'
 # Regex for matching prefname or value string. Must be used within groups.
-$rx_s = "(?:""(?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*"")|(?:'(?:[^']|(?<=[^\\]\\(?:\\\\)*)')*')"
-# Regex for capturing prefname or value string. Includes two capturing groups.
-$rx_sc = "(?:(?:""((?:[^""]|(?<=[^\\]\\(?:\\\\)*)"")*)"")|(?:'((?:[^']|(?<=[^\\]\\(?:\\\\)*)')*)'))"
+$rx_s = '(?:"(?:[^"]|(?<=[^\\]\\(?:\\\\)*)")*")|(?:''(?:[^'']|(?<=[^\\]\\(?:\\\\)*)'')*'')'
 
 if ($inJS) {
 	if ($outputFile -ceq 'userJS_diff.log') { $outputFile = 'userJS_diff.js' }
@@ -160,7 +158,7 @@ function Get-UserJSPrefs {
 
 	# Isolate and sanitize the target expressions
 	$fileStr = " $fileStr"
-	$fileStr = $fileStr -creplace "\n", ''
+	$fileStr = $fileStr -creplace '\n', ''
 	$fileStr = $fileStr -creplace ".*?$rx_p\s*\(\s*($rx_s)\s*,\s*(.+?)\s*\)\s*;", "`$1`n`$2`n"
 	$fileStr = $fileStr -creplace '(?s)(.*\n).*', '$1'
 
@@ -174,7 +172,7 @@ function Get-UserJSPrefs {
 			}
 			$pn = $false
 		} else {
-			$pn = $line -creplace "^[""'](.*)[""']$", '$1'
+			$pn = $line -creplace '^["''](.*)["'']$', '$1'
 		}
 	}
 }
@@ -254,7 +252,7 @@ function Write-Report {
 	# Format for padding
 	$summary_format = '{0, 5} {1, -1}'
 	if ($script:inJS) {
-		$list_format = "{0, -3} pref(""{1, -1}"", {2, -1});"
+		$list_format = '{0, -3} pref("{1, -1}", {2, -1});'
 		$dlist_format = "/* {0, $(-$fn_pad)} */ {1, -3} pref(""{2, -1}"", {3, -1});$nl"
 	} else {
 		$list_format = "{0, -3} {1, $(-$pn_pad)}  {2, 1}"
@@ -424,8 +422,8 @@ Write-Host "Loading $fileNameB ..."
 $fileB = [System.IO.File]::ReadAllText($filepath_B)
 
 # Remove carriage returns, if they exist. The source files aren't supposed to have them in the first place.
-$fileA = $fileA -creplace "\r", ''
-$fileB = $fileB -creplace "\r", ''
+$fileA = $fileA -creplace '\r', ''
+$fileB = $fileB -creplace '\r', ''
 
 # Parse files
 Write-Host "Parsing $fileNameA ..."
