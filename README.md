@@ -1,5 +1,5 @@
  Compare-UserJS
-================
+----------------
 
 <br>
 
@@ -46,7 +46,7 @@ The easiest way to use this tool:
 2. Place them in the same folder.
 3. Drag and drop the two files that you want to compare on the *Compare-UserJS.bat*, simultaneously.
 
-The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you can't or don't want to use said batchfile, you will have to either relax the execution policy before starting ([see the examples][5]), or manually create a new blank ps1 file and copy the text of this PowerShell script in it. In fact, you may even have to do both, depending on your system's configuration.
+The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you can't or don't want to use said batchfile, see the examples for alternatives.
 
 Compare-UserJS requires two parameters: the paths of the two files to be compared. You can pass them directly from the console/terminal, but that is not strictly necessary because the script will prompt you to enter them during execution if you don't.
 
@@ -87,6 +87,8 @@ Or just read it from the file, but that's less thrilling.
  Examples and tips
 -------------------
 
+### Running the script directly
+
 Starting PowerShell from the console (may vary):
 ```Batchfile
 PowerShell.exe
@@ -106,8 +108,10 @@ Set-ExecutionPolicy Unrestricted
 
 Alternatively, call the script like this:
 ```Shell
-PowerShell.exe -ExecutionPolicy Bypass -Command "& 'Compare-UserJS.ps1'"
+PowerShell.exe -ExecutionPolicy Bypass -File Compare-UserJS.ps1 +params (if any)
 ```
+
+-------------------------------------------
 
 Comparing fileA to fileB:
 ```PowerShell
@@ -147,7 +151,7 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 ----------------------------
 
 - **Why the heck did you make this?**
-    - Firstly, to prove myself that I can produce nearly-awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm (still) hooked on regular expressions. Fourthly, for learning purposes.
+    - Firstly, to prove myself that I can produce nearly awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm (still) hooked on regular expressions. Fourthly, for learning purposes.
 <br>
 
 [:top:][1]
