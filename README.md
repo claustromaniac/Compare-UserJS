@@ -27,7 +27,7 @@ Information provided by this script:
 
 Additionally, it can catch one type of syntax error (for now), and includes that information in the report.
 
-You can see an example of what the output looks like [here](userJS_diff.log).
+You can see an example of what the output looks like [here][example].
 
 [:top:][1]
 
@@ -168,8 +168,9 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
 [article]: https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
 [bat]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.bat
-[ps1]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.ps1
+[example]: https://gist.github.com/claustromaniac/f88116f8a59042d59edf10646c906c24
 [g-u.js]: https://github.com/ghacksuserjs/ghacks-user.js
+[ps1]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.ps1
 [ps]: https://github.com/PowerShell/PowerShell
 [wiki]: https://github.com/ghacksuserjs/ghacks-user.js/wiki/1.1-Overview#small_orange_diamond-what-is-it-what-does-it-do-and-why-would-i-want-one
 
