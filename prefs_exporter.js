@@ -15,26 +15,24 @@
 */
 
 var result = [];
+var prefs = Services.prefs.getChildList('');
 
-for (const pref of Services.prefs.getChildList('')){
-	switch (Services.prefs.getPrefType(pref)) {
+for (const i in prefs){
+	var p = prefs[i].replace(/"/g, '\\"');
+	switch (prefs[i]) {
 		case 32:
-			var p = pref.replace(/"/g, '\\"');
-			var v = Services.prefs.getStringPref(pref).replace(/"/g, '\\"');
+			var v = Services.prefs.getStringPref(prefs[i]).replace(/"/g, '\\"');
 			result.push(`user_pref("${p}", "${v}");`);
 			break;
 		case 64:
-			var p = pref.replace(/"/g, '\\"');
-			var v = Services.prefs.getIntPref(pref).toString().replace(/"/g, '\\"');
+			var v = Services.prefs.getIntPref(prefs[i]).toString().replace(/"/g, '\\"');
 			result.push(`user_pref("${p}", ${v});`);
 			break;
 		case 128:
-			var p = pref.replace(/"/g, '\\"');
-			var v = Services.prefs.getBoolPref(pref).toString().replace(/"/g, '\\"');
+			var v = Services.prefs.getBoolPref(prefs[i]).toString().replace(/"/g, '\\"');
 			result.push(`user_pref("${p}", ${v});`);
 			break;
 		default:
-			var p = pref.replace(/"/g, '\\"');
 			result.push(`user_pref("${p}", ???);`);
 	}
 }
