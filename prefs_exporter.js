@@ -25,11 +25,11 @@ for (const i in prefs){
 			result.push(`user_pref("${p}", "${v}");`);
 			break;
 		case 64:
-			var v = Services.prefs.getIntPref(prefs[i]).toString().replace(/"/g, '\\"');
+			var v = Services.prefs.getIntPref(prefs[i]).toString();
 			result.push(`user_pref("${p}", ${v});`);
 			break;
 		case 128:
-			var v = Services.prefs.getBoolPref(prefs[i]).toString().replace(/"/g, '\\"');
+			var v = Services.prefs.getBoolPref(prefs[i]).toString();
 			result.push(`user_pref("${p}", ${v});`);
 			break;
 		default:
