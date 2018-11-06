@@ -19,7 +19,7 @@ var prefs = Services.prefs.getChildList('');
 
 for (const i in prefs){
 	var p = prefs[i].replace(/"/g, '\\"');
-	switch (prefs[i]) {
+	switch (Services.prefs.getPrefType(prefs[i])) {
 		case 32:
 			var v = Services.prefs.getStringPref(prefs[i]).replace(/"/g, '\\"');
 			result.push(`user_pref("${p}", "${v}");`);
