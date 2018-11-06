@@ -33,7 +33,7 @@ for (const i in prefs){
 			result.push(`user_pref("${p}", ${v});`);
 			break;
 		default:
-			result.push(`user_pref("${p}", ???);`);
+			result.push(`//user_pref("${p}", ???);`);
 	}
 }
 
