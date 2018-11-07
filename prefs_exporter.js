@@ -12,6 +12,12 @@
 		7. Paste in your editor of choice.
 		8. Make sure to remove the leading and trailing text from the log entry,
 		especially if you intend to use the file for something other than comparisons.
+
+	Note: In old versions of Firefox (or forks based on such versions) you may
+	need/want to try a different solution like @Theemim's GeckoPrefsExporter:
+
+	https://github.com/Theemim/GeckoPrefsExporter
+
 */
 
 var result = [];
