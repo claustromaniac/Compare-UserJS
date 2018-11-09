@@ -31,7 +31,7 @@ You can see an example of what the output looks like [here][example].
 :small_blue_diamond: Requirements
 ---------------
 
-PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems. You can download the latest version from the official [PowerShell repository][ps].
+PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it **_should_ also run fine on Unix-like systems**. You can download the latest version from the official [PowerShell repository][ps].
 
 
 :small_blue_diamond: Instructions
@@ -161,13 +161,13 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
 
 [1]: https://github.com/claustromaniac/Compare-UserJS#Compare-UserJS
-[2]: https://github.com/claustromaniac/Compare-UserJS#requirements
-[3]: https://github.com/claustromaniac/Compare-UserJS#instructions
-[4]: https://github.com/claustromaniac/Compare-UserJS#parameters
-[5]: https://github.com/claustromaniac/Compare-UserJS#examples-and-tips
-[6]: https://github.com/claustromaniac/Compare-UserJS#acknowledgements
-[7]: https://github.com/claustromaniac/Compare-UserJS#glossary
-[8]: https://github.com/claustromaniac/Compare-UserJS#faq-assuming-it-counts-when-im-the-one-asking
+[2]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-requirements
+[3]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-instructions
+[4]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-parameters
+[5]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-examples-and-tips
+[6]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-acknowledgements
+[7]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-glossary
+[8]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-faq-assuming-it-counts-when-im-the-one-asking
 
 [article]: https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
 [bat]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.bat
