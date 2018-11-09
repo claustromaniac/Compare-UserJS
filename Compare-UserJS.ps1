@@ -49,8 +49,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.17.2
-	Update Date: 2018-10-31
+	Version: 1.18.0
+	Update Date: 2018-11-09
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.17.2'
+$myVersion = 'v1.18.0'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -177,32 +177,12 @@ function Get-UserJSPrefs {
 	}
 }
 
-function Read-SLCom {
-	# Function for filtering prefs declared behind single-line JS comments (//...)
+function Read-InactivePrefs {
+	# Function for filtering prefs declared in JS comments (//... or /*...*/)
 	param([hashtable]$prefs_ht, [string]$fileStr)
 
-	# Get only lines with single-line comments
-	$fileStr = $fileStr -creplace "(?m)^(?!.*//$rx_c).*\n", ''
-	# Trim everything up to //
-	$fileStr = $fileStr -creplace "(?m)^.*?//$rx_c", ''
-
-	Get-UserJSPrefs $prefs_ht $fileStr
-}
-
-function Read-MLCom {
-	# Function for filtering prefs declared within the context of JS multi-line comments (/*...*/)
-	param([hashtable]$prefs_ht, [string]$fileStr)
-
-	# Make sure there are multi-line comments, return otherwise
-	if (!($fileStr -cmatch "(?s)/\*$rx_c.*\*/$rx_c")) { return }
-	# Trim text between multi-line comments
-	$fileStr = $fileStr -creplace "(?s)\*/$rx_c.*?/\*$rx_c", "*/ /*"
-	# Remove leading text
-	$fileStr = $fileStr -creplace "(?s)^.*?/\*$rx_c", '/*'
-	# Remove trailing text
-	$fileStr = $fileStr -creplace "(?s)^(.*\*/$rx_c).*$", '$1'
-	# Remove single-line comments
-	$fileStr = $fileStr -creplace "//$rx_c.*", ''
+	# Uh... attempting to make this more readable is not worthwhile. Sorry for the inconvenience.
+	$fileStr = $fileStr -creplace "(?s)(?>(?:[^/]|/(?![/*]$rx_c))*)(?:/(/[^\n]*\n|\*(?:[^*]|\*(?!/$rx_c))*(?:\*/)?))?", '$1'
 
 	Get-UserJSPrefs $prefs_ht $fileStr
 }
@@ -428,15 +408,13 @@ $fileB = $fileB -creplace '\r', ''
 # Parse files
 Write-Host "Parsing $fileNameA ..."
 if (!$noCommentsA) {
-	Read-SLCom $prefsA $fileA
-	Read-MLCom $prefsA $fileA
+	Read-InactivePrefs $prefsA $fileA
 } else { Write-Host 'Comments in this file will not be parsed as such.' }
 Read-ActivePrefs $prefsA $fileA (!$noCommentsA)
 
 Write-Host "Parsing $fileNameB ..."
 if (!$noCommentsB) {
-	Read-SLCom $prefsB $fileB
-	Read-MLCom $prefsB $fileB
+	Read-InactivePrefs $prefsB $fileB
 } else { Write-Host 'Comments in this file will not be parsed as such.' }
 Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
 
