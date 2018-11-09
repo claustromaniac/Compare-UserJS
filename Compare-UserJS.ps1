@@ -49,7 +49,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.0
+	Version: 1.18.1
 	Update Date: 2018-11-09
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.0'
+$myVersion = 'v1.18.1'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -193,7 +193,7 @@ function Read-ActivePrefs {
 
 	if ($comments) {
 		# Remove multi-line comments
-		$fileStr = $fileStr -creplace "(?s)/\*$rx_c.*?\*/$rx_c", ''
+		$fileStr = $fileStr -creplace "(?s)/\*$rx_c(?:[^*]|\*(?!/$rx_c))*(?:\*/)?", ''
 		# Remove single-line comments
 		$fileStr = $fileStr -creplace "//$rx_c.*", ''
 	}
