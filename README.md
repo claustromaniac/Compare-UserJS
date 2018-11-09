@@ -1,21 +1,17 @@
  Compare-UserJS
 ----------------
 
-<br>
+[Requirements][2]<br>
+[Instructions][3]<br>
+[Parameters][4]<br>
+[Examples and tips][5]<br>
+[Acknowledgements][6]<br>
+[Glossary][7]<br>
+[F.A.Q.][8]<br>
 
-:bookmark_tabs: Index
-:---------------------
-[Requirements][2]
-[Instructions][3]
-[Parameters][4]
-[Examples and tips][5]
-[Acknowledgements][6]
-[Glossary][7]
-[F.A.Q.][8]
+---
 
-<br>
-
-This script uses my own elegant <sup>[<i>Citation needed.</i>]</sup>  algorithm for parsing *user.js* files, and by default logs the results to *userJS_diff.log*.
+This script parses [*user.js* files][7] and compares them, logging the results to *userJS_diff.log*.
 
 Information provided by this script:
 
@@ -32,16 +28,16 @@ You can see an example of what the output looks like [here][example].
 [:top:][1]
 
 
- Requirements
+:small_blue_diamond: Requirements
 ---------------
 
 PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it *should* also run fine on Unix-like systems. You can download the latest version from the official [PowerShell repository][ps].
 
 
- Instructions
+:small_blue_diamond: Instructions
 ---------------
 
-The easiest way to use this tool:
+The easiest way to use this tool (on Windows):
 1. Download copies of both [*Compare-UserJS.bat*][bat] and [*Compare-UserJS.ps1*][ps1].
 2. Place them in the same folder.
 3. Drag and drop the two files that you want to compare on the *Compare-UserJS.bat*, simultaneously.
@@ -60,7 +56,7 @@ Or just read it from the file, but that's less thrilling.
 [:top:][1]
 
 
- Parameters
+:small_blue_diamond: Parameters
 --------------
 
 |**Index** |   **Name**    | **Required?** |    **Default**    |                        **Description**                        |
@@ -84,7 +80,7 @@ Or just read it from the file, but that's less thrilling.
 [:top:][1]
 
 
- Examples and tips
+:small_blue_diamond: Examples and tips
 -------------------
 
 ### Running the script directly
@@ -105,6 +101,8 @@ Relaxing the execution policy:
 Set-ExecutionPolicy RemoteSigned
 Set-ExecutionPolicy Unrestricted
 ```
+
+:bangbang: *Important: users of Unix-like systems don't need to touch the execution policy (there is no such a thing there).*
 
 Alternatively, call the script like this:
 ```Shell
@@ -136,22 +134,27 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 [:top:][1]
 
 
- Acknowledgements
+:small_blue_diamond: Acknowledgements
 -------------------
 [Thorin-Oakenpants][p] and [earthlng][e] for their valuable feedback on the initial stages of this little project.
 
 
- Glossary
+:small_blue_diamond: Glossary
 -----------
 - state: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
-- user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I strongly encourage you to check out the [ghacks user.js][g-u.js] if you haven't already.
+- user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
 
 
- F.A.Q. <sub><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sub>
+:small_blue_diamond: F.A.Q. <sub><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sub>
 ----------------------------
 
 - **Why the heck did you make this?**
-    - Firstly, to prove myself that I can produce nearly awe-inducing garbage in under ~~200~~ 500 lines of code (I wish). Secondly, I have some shit to compare. Thirdly, I'm (still) hooked on regular expressions. Fourthly, for learning purposes.
+    1. To prove myself that I can produce nearly awe-inducing garbage in under ~~200~~ 500 lines of code (I wish).
+	2. I'm (still) hooked on regular expressions.
+    3. I have some shit to compare.
+	4. For learning purposes.
+	5. Did I mention I'm a regex junkie?
+	
 <br>
 
 [:top:][1]
