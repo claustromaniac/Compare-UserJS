@@ -49,7 +49,7 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.1
+	Version: 1.18.2
 	Update Date: 2018-11-09
 	Release Date: 2018-06-30
 	Author: claustromaniac
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.1'
+$myVersion = 'v1.18.2'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -300,13 +300,13 @@ function Write-Report {
 			[void] $bad_syntax_B.Add($list_format -f $format_arB)
 		}
 		if ($entriesA.count -gt 1) {
-			if ($dups_A_count++) { $dups_in_A.Add('') }
+			if ($dups_A_count++) { [void] $dups_in_A.Add('') }
 			forEach ($entry in $entriesA) {
 				[void] $dups_in_A.Add(($list_format -f $entry.inactive, $prefname, [string]$entry.value))
 			}
 		}
 		if ($entriesB.count -gt 1) {
-			if ($dups_B_count++) { $dups_in_B.Add('') }
+			if ($dups_B_count++) { [void] $dups_in_B.Add('') }
 			forEach ($entry in $entriesB) {
 				[void] $dups_in_B.Add(($list_format -f $entry.inactive, $prefname, [string]$entry.value))
 			}
