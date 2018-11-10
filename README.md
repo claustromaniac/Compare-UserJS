@@ -15,7 +15,7 @@ This script parses [*user.js* files][7] and compares them, logging the results t
 
 Information provided by this script:
 
-- matching prefs, both value and state.
+- matching prefs, both value and [state][7].
 - prefs with different values but matching state.
 - prefs declared in file A but not in file B, and vice versa.
 - inactive in A but active in B, and vice versa.
@@ -25,14 +25,11 @@ Additionally, it can catch one type of syntax error (for now), and includes that
 
 You can see an example of what the output looks like [here][example].
 
-[:top:][1]
-
 
 :small_blue_diamond: Requirements
 ---------------
 
 PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it **_should_ also run fine on Unix-like systems**. You can download the latest version from the official [PowerShell repository][ps].
-
 
 :small_blue_diamond: Instructions
 ---------------
@@ -141,8 +138,8 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
 :small_blue_diamond: Glossary
 -----------
-- state: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
-- user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
+- State: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
+- User.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
 
 
 :small_blue_diamond: F.A.Q. <sub><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sub>
@@ -150,10 +147,10 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
 - **Why the heck did you make this?**
     1. To prove myself that I can produce nearly awe-inducing garbage in under ~~200~~ 500 lines of code (I wish).
-	2. I'm (still) hooked on regular expressions.
+    2. I'm (still) hooked on regular expressions.
     3. I have some shit to compare.
-	4. For learning purposes.
-	5. Did I mention I'm a regex junkie?
+    4. For learning purposes.
+    5. Did I mention I'm a regex junkie?
 	
 <br>
 
