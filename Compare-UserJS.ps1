@@ -49,8 +49,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.2
-	Update Date: 2018-11-09
+	Version: 1.18.3
+	Update Date: 2018-11-13
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.2'
+$myVersion = 'v1.18.3'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -123,12 +123,12 @@ $fileNameB = (Split-Path -path $filepath_B -leaf)
 
 if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepath_B }
 
-# Regex for matching pref, user_pref, sticky_pref or lockPref
-$rx_p = '[pP]ref(?<=user_pref|\Wpref|sticky_pref|lockPref)'
+# Regex for matching pref, user_pref, sticky_pref or lockPref.
+[regex] $rx_p = 'ref(?<=\b(?:user_p|p|sticky_p|lockP)ref)'
 # Regex for detecting JS comments. Meant to be used as a suffix.
-$rx_c = '(?!(?:(?:[^"]|(?<=[^\\]\\(?:\\\\)*)")*"|(?:[^'']|(?<=[^\\]\\(?:\\\\)*)'')*'')\s*\)\s*;)'
+[regex] $rx_c = '(?!(?:(?:[^"\n]|(?<=[^\\]\\(?:\\\\)*)")*"|(?:[^''\n]|(?<=[^\\]\\(?:\\\\)*)'')*'')\s*\)\s*;)'
 # Regex for matching prefname or value string. Must be used within groups.
-$rx_s = '(?:"(?:[^"]|(?<=[^\\]\\(?:\\\\)*)")*")|(?:''(?:[^'']|(?<=[^\\]\\(?:\\\\)*)'')*'')'
+[regex] $rx_s = '(?:"(?:[^"\n]|(?<=[^\\]\\(?:\\\\)*)")*")|(?:''(?:[^''\n]|(?<=[^\\]\\(?:\\\\)*)'')*'')'
 
 if ($inJS) {
 	if ($outputFile -ceq 'userJS_diff.log') { $outputFile = 'userJS_diff.js' }
@@ -157,10 +157,7 @@ function Get-UserJSPrefs {
 	param($prefs_ht, $fileStr, [string]$inactive_flag = $script:inactive_flag)
 
 	# Isolate and sanitize the target expressions
-	$fileStr = " $fileStr"
-	$fileStr = $fileStr -creplace '\n', ''
-	$fileStr = $fileStr -creplace ".*?$rx_p\s*\(\s*($rx_s)\s*,\s*(.+?)\s*\)\s*;", "`$1`n`$2`n"
-	$fileStr = $fileStr -creplace '(?s)(.*\n).*', '$1'
+	$fileStr = $fileStr -creplace "(?s).*?$rx_p\s*\(\s*($rx_s)\s*,\s*([^\n]+?)\s*\)\s*;\s*|.*", "`$1`n`$2`n"
 
 	$pn = $false
 	forEach ($line in $fileStr.Split("`n")) {
