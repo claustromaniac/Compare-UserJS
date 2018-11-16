@@ -88,6 +88,7 @@ PowerShell.exe
 ```
 
 Checking the current execution policy (from PowerShell):
+
 :bangbang: *Important: users of Unix-like systems don't need to touch the execution policy (there is no such a thing there).*
 ```PowerShell
 Get-ExecutionPolicy
