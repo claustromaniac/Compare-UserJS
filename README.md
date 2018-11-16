@@ -88,6 +88,7 @@ PowerShell.exe
 ```
 
 Checking the current execution policy (from PowerShell):
+:bangbang: *Important: users of Unix-like systems don't need to touch the execution policy (there is no such a thing there).*
 ```PowerShell
 Get-ExecutionPolicy
 ```
@@ -99,13 +100,15 @@ Set-ExecutionPolicy RemoteSigned
 Set-ExecutionPolicy Unrestricted
 ```
 
-:bangbang: *Important: users of Unix-like systems don't need to touch the execution policy (there is no such a thing there).*
-
 Alternatively, call the script like this:
-```Shell
-PowerShell.exe -ExecutionPolicy Bypass -File Compare-UserJS.ps1 +params (if any)
+```Batchfile
+PowerShell.exe -ExecutionPolicy Bypass -File Compare-UserJS.ps1 <params>
 ```
 
+If you encounter any sort of issues with this script in a version of PowerShell higher than v2, try forcing the use of PSv2 like this:
+```Shell
+PowerShell.exe -Version 2 -File Compare-UserJS.ps1 <params>
+```
 -------------------------------------------
 
 Comparing fileA to fileB:
