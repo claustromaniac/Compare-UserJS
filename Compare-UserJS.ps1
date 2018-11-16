@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
-	Compares two user.js files and outputs to a file all of the differences found between them.
+	Parses two user.js files and writes to a file all of the differences found.
 
 .DESCRIPTION
 	Compare-UserJS parses Firefox configuration files rudimentarily, in search for the specific set of valid expressions used to define preference values.
 
-	pref("prefname", value);
 	lockPref("prefname", value);
+	pref("prefname", value);
 	sticky_pref("prefname", value);
 	user_pref("prefname", value);
 
-	In spite of the fact that it does this natively, Compare-UserJS is still capable of interpreting those expressions in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
+	Those expressions can be interpreted in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
 
 	Compare-UserJS can also detect a particular type of syntax error. Specifically, it performs rudimentary (crappy) type-checking on the value parameter of the aforementioned JS function calls. Whenever it seems that the value is neither a string, nor an integer, nor a boolean, Compare-UserJS will include this information in the report.
 
@@ -27,10 +27,10 @@
 	Append the report to the end of the file, instead of rewriting if a file by that name exists.
 
 .PARAMETER noCommentsA
-	Skips parsing comments in file A, treating everything as active. Useful for making parsing faster when you know beforehand that file A does not have comments.
+	Skips parsing comments in file A as comments, treating everything as active.
 
 .PARAMETER noCommentsB
-	Skips parsing comments in file B, treating everything as active. Useful for making parsing faster when you know beforehand that file B does not have comments.
+	Skips parsing comments in file B as comments, treating everything as active.
 
 .PARAMETER hideMask
 	Bitmask value for hiding parts of the report selectively. Adding up the values omits different parts of the report.
@@ -49,8 +49,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.3
-	Update Date: 2018-11-13
+	Version: 1.18.4
+	Update Date: 2018-11-16
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -81,11 +81,11 @@
 [CmdletBinding()]
 
 PARAM (
-	[Parameter(Mandatory=$True,HelpMessage='Insert the path to the first file to be compared.')]
+	[Parameter(Mandatory=$true,HelpMessage='Insert the path to the first file to be compared.')]
 	[ValidateNotNullOrEmpty()]
 	[string]$filepath_A,
 
-	[Parameter(Mandatory=$True,HelpMessage='Insert the path to the second file to be compared.')]
+	[Parameter(Mandatory=$true,HelpMessage='Insert the path to the second file to be compared.')]
 	[ValidateNotNullOrEmpty()]
 	[string]$filepath_B,
 
@@ -101,7 +101,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.3'
+$myVersion = 'v1.18.4'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -163,8 +163,8 @@ function Get-UserJSPrefs {
 	forEach ($line in $fileStr.Split("`n")) {
 		if ($pn) {
 			[hashtable[]] $prefs_ht.$pn += @{
-				inactive=$inactive_flag;
-				broken=!($line -cmatch "(?:true|false|-?[0-9]+)|$rx_s");
+				inactive=$inactive_flag
+				broken=!($line -cmatch "(?:true|false|-?[0-9]+)|$rx_s")
 				value=$line
 			}
 			$pn = $false
@@ -176,8 +176,12 @@ function Get-UserJSPrefs {
 
 function Read-InactivePrefs {
 	# Function for filtering prefs declared in JS comments (//... or /*...*/)
-	param([hashtable]$prefs_ht, [string]$fileStr)
+	param([hashtable]$prefs_ht, [string]$fileStr, [bool]$noComments = $false)
 
+	if ($noComments) {
+		Write-Host 'Comments in this file will not be parsed as such.'
+		return
+	}
 	# Uh... attempting to make this more readable is not worthwhile. Sorry for the inconvenience.
 	$fileStr = $fileStr -creplace "(?s)(?>(?:[^/]|/(?![/*]$rx_c))*)(?:/(/[^\n]*\n|\*(?:[^*]|\*(?!/$rx_c))*(?:\*/)?))?", '$1'
 
@@ -186,9 +190,9 @@ function Read-InactivePrefs {
 
 function Read-ActivePrefs {
 	# Function for filtering active prefs
-	param([hashtable]$prefs_ht, [string]$fileStr, [bool]$comments = $true)
+	param([hashtable]$prefs_ht, [string]$fileStr, [bool]$noComments = $false)
 
-	if ($comments) {
+	if (!$noComments) {
 		# Remove multi-line comments
 		$fileStr = $fileStr -creplace "(?s)/\*$rx_c(?:[^*]|\*(?!/$rx_c))*(?:\*/)?", ''
 		# Remove single-line comments
@@ -392,28 +396,20 @@ function Write-Report {
 
 #----------------[ Main Execution ]----------------------------------------------------
 
-# Load files into memory.
+# Load files into memory, removing carriage returns in the process.
 Write-Host "Loading $fileNameA ..."
-$fileA = [System.IO.File]::ReadAllText($filepath_A)
+$fileA = ([System.IO.File]::ReadAllText($filepath_A)) -creplace '\r', ''
 Write-Host "Loading $fileNameB ..."
-$fileB = [System.IO.File]::ReadAllText($filepath_B)
-
-# Remove carriage returns, if they exist. The source files aren't supposed to have them in the first place.
-$fileA = $fileA -creplace '\r', ''
-$fileB = $fileB -creplace '\r', ''
+$fileB = ([System.IO.File]::ReadAllText($filepath_B)) -creplace '\r', ''
 
 # Parse files
 Write-Host "Parsing $fileNameA ..."
-if (!$noCommentsA) {
-	Read-InactivePrefs $prefsA $fileA
-} else { Write-Host 'Comments in this file will not be parsed as such.' }
-Read-ActivePrefs $prefsA $fileA (!$noCommentsA)
+Read-InactivePrefs $prefsA $fileA $noCommentsA
+Read-ActivePrefs $prefsA $fileA $noCommentsA
 
 Write-Host "Parsing $fileNameB ..."
-if (!$noCommentsB) {
-	Read-InactivePrefs $prefsB $fileB
-} else { Write-Host 'Comments in this file will not be parsed as such.' }
-Read-ActivePrefs $prefsB $fileB (!$noCommentsB)
+Read-InactivePrefs $prefsB $fileB $noCommentsB
+Read-ActivePrefs $prefsB $fileB $noCommentsB
 
 Write-Host "Generating and writing report to $outputFile ...`nDon't close the console/terminal!"
 $outstream = New-Object System.IO.StreamWriter $outputFile, $append
