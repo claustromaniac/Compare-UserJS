@@ -7,7 +7,6 @@
 [Examples and tips][5]<br>
 [Acknowledgements][6]<br>
 [Glossary][7]<br>
-[F.A.Q.][8]<br>
 
 ---
 
@@ -34,12 +33,14 @@ PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it *
 :small_blue_diamond: Instructions
 ---------------
 
-The easiest way to use this tool (on Windows):
+If you're on *nix just skip to the [examples][5].
+
+On Windows you can:
 1. Download copies of both [*Compare-UserJS.bat*][bat] and [*Compare-UserJS.ps1*][ps1].
 2. Place them in the same folder.
 3. Drag and drop the two files that you want to compare on the *Compare-UserJS.bat*, simultaneously.
 
-The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you can't or don't want to use said batchfile, see the examples for alternatives.
+The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you don't want to use said batchfile, see the examples for alternatives.
 
 Compare-UserJS requires two parameters: the paths of the two files to be compared. You can pass them directly from the console/terminal, but that is not strictly necessary because the script will prompt you to enter them during execution if you don't.
 
@@ -62,16 +63,15 @@ Or just read it from the file, but that's less thrilling.
 |    1     | `filePath_B`  |      Yes      |                   | Path to the second file to compare.                           |
 |    2     |  `ouputFile`  |      No       | *userJS_diff.log* | Path to the file where the report will be dumped.             |
 |    3     |   `append`    |      No       |       false       | Append the report to the end of the file if it already exists.|
-|    4     | `noCommentsA` |      No       |       false       | Parse JS comments in file A as code. (2)                      |
+|    4     | `noCommentsA` |      No       |       false       | Parse JS comments in file A as code. (deprecated)             |
 |    5     | `noCommentsB` |      No       |       false       | Parse JS comments in file B as code.                          |
-|    6     |  `hideMask`   |      No       |         0         | Bitmask value for hiding parts of the report selectively. (3) |
-|    7     |    `inJS`     |      No       |       false       | Get the report written in JavaScript. (4)                     |
+|    6     |  `hideMask`   |      No       |         0         | Bitmask value for hiding parts of the report selectively. (2) |
+|    7     |    `inJS`     |      No       |       false       | Get the report written in JavaScript. (3)                     |
 
 <sub><em>
   1 - All path parameters can be absolute or relative. <br>
-  2 - Mostly deprecated. It should make parsing slightly faster with files that you know beforehand that don't have comments. <br> 
-  3 - See the embedded help info for details. <br>
-  4 - It will be written to userJS_diff.js unless the -outputFile parameter is also specified.
+  2 - See the embedded help info for details. <br>
+  3 - It will be written to userJS_diff.js unless the -outputFile parameter is also specified.
 </em></sub>
 
 [:top:][1]
@@ -136,29 +136,14 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 
 
 :small_blue_diamond: Acknowledgements
--------------------
-[Thorin-Oakenpants][p] and [earthlng][e] for their valuable feedback on the initial stages of this little project.
+---------------------------------------
+Thanks to [Thorin-Oakenpants][p] and [earthlng][e] for their valuable feedback on the initial stages of this little project.
 
 
 :small_blue_diamond: Glossary
------------
+-------------------------------
 - State: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
-- User.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
-
-
-:small_blue_diamond: F.A.Q. <sub><sup><sub>(assuming it counts when I'm the one asking)<sub></sup></sub>
-----------------------------
-
-- **Why the heck did you make this?**
-    1. To prove myself that I can produce nearly awe-inducing garbage in under ~~200~~ 500 lines of code (I wish).
-    2. I'm (still) hooked on regular expressions.
-    3. I have some shit to compare.
-    4. For learning purposes.
-    5. Did I mention I'm a regex junkie?
-	
-<br>
-
-[:top:][1]
+- user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
 
 
 [1]: https://github.com/claustromaniac/Compare-UserJS#Compare-UserJS
@@ -168,7 +153,6 @@ Compare-UserJS.bat "fileA.js" "fileB.js"
 [5]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-examples-and-tips
 [6]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-acknowledgements
 [7]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-glossary
-[8]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-faq-assuming-it-counts-when-im-the-one-asking
 
 [article]: https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
 [bat]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.bat
