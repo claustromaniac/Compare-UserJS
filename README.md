@@ -28,7 +28,7 @@ You can see an example of what the output looks like [here][example].
 :small_blue_diamond: Requirements
 ---------------
 
-PowerShell version 2 or higher, which comes pre-installed on Windows 7, but it **_should_ also run fine on Unix-like systems**. You can download the latest version from the official [PowerShell repository][ps].
+PowerShell version 2 (or newer) and .NET 3.5 (or newer), both of which come as standard components of Windows 7, but the script **_should_ also run fine on Unix-like systems**. You can download the latest version of PowerShell and its dependencies from the official [PowerShell repository][ps].
 
 :small_blue_diamond: Instructions
 ---------------

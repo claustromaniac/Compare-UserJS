@@ -207,17 +207,17 @@ function Write-Report {
 	param()
 
 	# Report chunks
-	$matching_prefs = New-Object Collections.Generic.Hashset[string]                   # matching values
-	$differences = New-Object Collections.Generic.Hashset[string]                      # different values
-	$missing_in_A = New-Object Collections.Generic.Hashset[string]                     # not declared
-	$missing_in_B = New-Object Collections.Generic.Hashset[string]
-	$inactive_in_A = New-Object Collections.Generic.Hashset[string]                    # matching value but mismatching state
-	$inactive_in_B = New-Object Collections.Generic.Hashset[string]
-	$fully_mismatching = New-Object Collections.Generic.Hashset[string]                # mismatching states and values
-	$bad_syntax_A = New-Object Collections.ArrayList                                   # possible syntax errors
-	$bad_syntax_B = New-Object Collections.ArrayList
-	$dups_in_A = New-Object Collections.ArrayList                                      # duplicates
-	$dups_in_B = New-Object Collections.ArrayList
+	$matching_prefs = New-Object System.Collections.Generic.Hashset[string]                   # matching values
+	$differences = New-Object System.Collections.Generic.Hashset[string]                      # different values
+	$missing_in_A = New-Object System.Collections.Generic.Hashset[string]                     # not declared
+	$missing_in_B = New-Object System.Collections.Generic.Hashset[string]
+	$inactive_in_A = New-Object System.Collections.Generic.Hashset[string]                    # matching value but mismatching state
+	$inactive_in_B = New-Object System.Collections.Generic.Hashset[string]
+	$fully_mismatching = New-Object System.Collections.Generic.Hashset[string]                # mismatching states and values
+	$bad_syntax_A = New-Object System.Collections.ArrayList                                   # possible syntax errors
+	$bad_syntax_B = New-Object System.Collections.ArrayList
+	$dups_in_A = New-Object System.Collections.ArrayList                                      # duplicates
+	$dups_in_B = New-Object System.Collections.ArrayList
 	$dups_A_count = $dups_B_count = 0
 
 	# Get list of unique prefs sorted alphabetically
