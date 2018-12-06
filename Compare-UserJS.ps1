@@ -9,6 +9,7 @@
 	pref("prefname", value);
 	sticky_pref("prefname", value);
 	user_pref("prefname", value);
+	defaultPref("prefname", value);
 
 	Those expressions can be interpreted in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
 
@@ -123,8 +124,8 @@ $fileNameB = (Split-Path -path $filepath_B -leaf)
 
 if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepath_B }
 
-# Regex for matching pref, user_pref, sticky_pref or lockPref.
-[regex] $rx_p = 'ref(?<=\b(?:user_p|p|sticky_p|lockP)ref)'
+# Regex for matching pref, user_pref, sticky_pref, lockPref or defaultPref.
+[regex] $rx_p = 'ref(?<=\b(?:user_p|p|sticky_p|lockP|defaultP)ref)'
 # Regex for detecting JS comments. Meant to be used as a suffix.
 [regex] $rx_c = '(?!(?:(?:[^"\n]|(?<=[^\\]\\(?:\\\\)*)")*"|(?:[^''\n]|(?<=[^\\]\\(?:\\\\)*)'')*'')\s*\)\s*;)'
 # Regex for matching prefname or value string. Must be used within groups.
