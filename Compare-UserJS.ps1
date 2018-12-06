@@ -5,6 +5,7 @@
 .DESCRIPTION
 	Compare-UserJS parses Firefox configuration files rudimentarily, in search for the specific set of valid expressions used to define preference values.
 
+	defaultPref("prefname", value);
 	lockPref("prefname", value);
 	pref("prefname", value);
 	sticky_pref("prefname", value);
@@ -49,8 +50,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.4
-	Update Date: 2018-11-16
+	Version: 1.19.0
+	Update Date: 2018-12-06
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -101,7 +102,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.4'
+$myVersion = 'v1.19.0'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
@@ -123,8 +124,8 @@ $fileNameB = (Split-Path -path $filepath_B -leaf)
 
 if ($fileNameA -ceq $fileNameB) { $fileNameA, $fileNameB = $filepath_A, $filepath_B }
 
-# Regex for matching pref, user_pref, sticky_pref or lockPref.
-[regex] $rx_p = 'ref(?<=\b(?:user_p|p|sticky_p|lockP)ref)'
+# Regex for matching pref, user_pref, sticky_pref, lockPref or defaultPref.
+[regex] $rx_p = 'ref(?<=\b(?:user_p|p|sticky_p|lockP|defaultP)ref)'
 # Regex for detecting JS comments. Meant to be used as a suffix.
 [regex] $rx_c = '(?!(?:(?:[^"\n]|(?<=[^\\]\\(?:\\\\)*)")*"|(?:[^''\n]|(?<=[^\\]\\(?:\\\\)*)'')*'')\s*\)\s*;)'
 # Regex for matching prefname or value string. Must be used within groups.
