@@ -5,11 +5,11 @@
 .DESCRIPTION
 	Compare-UserJS parses Firefox configuration files rudimentarily, in search for the specific set of valid expressions used to define preference values.
 
+	defaultPref("prefname", value);
 	lockPref("prefname", value);
 	pref("prefname", value);
 	sticky_pref("prefname", value);
 	user_pref("prefname", value);
-	defaultPref("prefname", value);
 
 	Those expressions can be interpreted in various valid syntactic forms, like using single quotes instead of double quotes, using space characters, line breaks, etc. Some edge cases may not be supported, however.
 
@@ -50,8 +50,8 @@
 	Get the report in JavaScript. It will be written to userJS_diff.js unless the -outputFile parameter is specified.
 
 .NOTES
-	Version: 1.18.4
-	Update Date: 2018-11-16
+	Version: 1.19.0
+	Update Date: 2018-12-06
 	Release Date: 2018-06-30
 	Author: claustromaniac
 	Copyright (C) 2018. Released under the MIT license.
@@ -102,7 +102,7 @@ PARAM (
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$myVersion = 'v1.18.4'
+$myVersion = 'v1.19.0'
 
 # Leave all exceptions for the current scope to handle. I'm lazy like that.
 $ErrorActionPreference = 'Stop'
