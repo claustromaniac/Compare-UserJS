@@ -1,13 +1,12 @@
  Compare-UserJS
 ----------------
 
-[Requirements][2]<br>
-[Instructions][3]<br>
-[Parameters][4]<br>
-[Examples and tips][5]<br>
-[Acknowledgements][6]<br>
-[Glossary][7]<br>
-
+- [Requirements][2]
+- [Instructions][3]
+- [Parameters][4]
+- [Examples and tips][5]
+- [Acknowledgements][6]
+- [Glossary][7]
 ---
 
 This script parses [*user.js* files][7] and compares them, logging the results to *userJS_diff.log*.
@@ -25,37 +24,42 @@ Additionally, it can catch one type of syntax error (for now), and includes that
 You can see an example of what the output looks like [here][example].
 
 
-:small_blue_diamond: Requirements
+🔹 Requirements
 ---------------
 
-PowerShell version 2 (or newer) and .NET 3.5 (or newer), both of which come as standard components of Windows 7, but the script **_should_ also run fine on Unix-like systems**. You can download the latest version of PowerShell and its dependencies from the official [PowerShell repository][ps].
+PowerShell version 2 (or newer) and .NET 3.5 (or newer), both of which come as standard components of Windows 7, but the script also **runs fine on Unix-like systems**. You can download the latest version of PowerShell and its dependencies from the official [PowerShell repository][ps].
 
-:small_blue_diamond: Instructions
+🔹 Instructions
 ---------------
 
-If you're on *nix just skip to the [examples][5].
+Compare-UserJS requires two parameters: the paths of the two files to be compared. You can pass them directly from the console/terminal, but that is not strictly necessary because the script will prompt you to enter them during execution if you don't.
+
+If you're on *nix you can just skip to the [examples][5].
 
 On Windows you can:
 1. Download copies of both [*Compare-UserJS.bat*][bat] and [*Compare-UserJS.ps1*][ps1].
 2. Place them in the same folder.
 3. Drag and drop the two files that you want to compare on the *Compare-UserJS.bat*, simultaneously.
 
-The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you don't want to use said batchfile, see the examples for alternatives.
+The *Compare-UserJS.bat* works as a launcher that makes it easier to run the PowerShell script. If you don't want to use said batchfile, you will first have to either:
 
-Compare-UserJS requires two parameters: the paths of the two files to be compared. You can pass them directly from the console/terminal, but that is not strictly necessary because the script will prompt you to enter them during execution if you don't.
-
-See the embedded help info with:
+...relax the execution policy:
 ```PowerShell
-Get-Help .\Compare-UserJS -full
+# pick one or the other
+Set-ExecutionPolicy RemoteSigned
+Set-ExecutionPolicy Unrestricted
 ```
 
-Or just read it from the file, but that's less thrilling.
+...or call the script like this:
+```Batchfile
+PowerShell -ExecutionPolicy Bypass -File Compare-UserJS.ps1 <params>
+```
 
 [:top:][1]
 
 
-:small_blue_diamond: Parameters
---------------
+🔹 Parameters
+---------------
 
 |**Index** |   **Name**    | **Required?** |    **Default**    |                        **Description**                        |
 |:--------:|:-------------:|:-------------:|:-----------------:|---------------------------------------------------------------|
@@ -77,40 +81,22 @@ Or just read it from the file, but that's less thrilling.
 [:top:][1]
 
 
-:small_blue_diamond: Examples and tips
--------------------
+🔹 Examples and tips
+--------------------
 
-### Running the script directly
-
-Starting PowerShell from the console (may vary):
-```Batchfile
-PowerShell.exe
-```
-
-Checking the current execution policy (from PowerShell):
-
-:bangbang: *Important: users of Unix-like systems don't need to touch the execution policy (there is no such a thing there).*
+See the embedded help info:
 ```PowerShell
-Get-ExecutionPolicy
+Get-Help .\Compare-UserJS -full
 ```
-
-Relaxing the execution policy:
-```PowerShell
-# pick one or the other
-Set-ExecutionPolicy RemoteSigned
-Set-ExecutionPolicy Unrestricted
-```
-
-Alternatively, call the script like this:
-```Batchfile
-PowerShell.exe -ExecutionPolicy Bypass -File Compare-UserJS.ps1 <params>
-```
+Or just read it from the file, but that's less thrilling.
 
 If you encounter any sort of issues with this script in a version of PowerShell higher than v2, try forcing the use of PSv2 like this:
 ```Shell
-PowerShell.exe -Version 2 -File Compare-UserJS.ps1 <params>
+PowerShell -Version 2 -File Compare-UserJS.ps1 <params>
+# if you have PowerShell Core, use "pwsh" instead of "PowerShell", like this:
+pwsh -Version 2 -File Compare-UserJS.ps1 <params>
 ```
--------------------------------------------
+---------------
 
 Comparing fileA to fileB:
 ```PowerShell
@@ -129,30 +115,30 @@ This tool can help you make manual cleanups of your *prefs.js* too!
 
 Passing any parameters to the BAT is the same, except that you don't need the `.\`
 ```Batchfile
-Compare-UserJS.bat "fileA.js" "fileB.js"
+Compare-UserJS.bat "fileA.js" "fileB.js" -outputFile diff.txt
 ```
 
 [:top:][1]
 
 
-:small_blue_diamond: Acknowledgements
----------------------------------------
+🔹 Acknowledgments
+-------------------
 Thanks to [Thorin-Oakenpants][p] and [earthlng][e] for their valuable feedback on the initial stages of this little project.
 
 
-:small_blue_diamond: Glossary
--------------------------------
+🔹 Glossary
+-------------
 - State: Whether a pref was declared within the context of a JavaScript comment (inactive) or not (active).
 - user.js: Configuration file used by Firefox. You can find more information [here][article] and [here][wiki]. In the context of this project, this refers (to a limited extent) to all configuration files sharing the same syntax, including *prefs.js* and *all.js*. I recommend you to check out the [ghacks user.js][g-u.js] if you haven't already.
 
 
 [1]: https://github.com/claustromaniac/Compare-UserJS#Compare-UserJS
-[2]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-requirements
-[3]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-instructions
-[4]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-parameters
-[5]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-examples-and-tips
-[6]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-acknowledgements
-[7]: https://github.com/claustromaniac/Compare-UserJS#small_blue_diamond-glossary
+[2]: https://github.com/claustromaniac/Compare-UserJS#-requirements
+[3]: https://github.com/claustromaniac/Compare-UserJS#-instructions
+[4]: https://github.com/claustromaniac/Compare-UserJS#-parameters
+[5]: https://github.com/claustromaniac/Compare-UserJS#-examples-and-tips
+[6]: https://github.com/claustromaniac/Compare-UserJS#-acknowledgments
+[7]: https://github.com/claustromaniac/Compare-UserJS#-glossary
 
 [article]: https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
 [bat]: https://raw.githubusercontent.com/claustromaniac/Compare-UserJS/master/Compare-UserJS.bat
