@@ -5,7 +5,7 @@
 - [Instructions][3]
 - [Parameters][4]
 - [Examples and tips][5]
-- [Acknowledgements][6]
+- [Acknowledgments][6]
 - [Glossary][7]
 ---
 
